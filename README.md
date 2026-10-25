@@ -34,3 +34,11 @@ npm run build
 3. Add design experiments to `media/graphic-design/` whenever ready.
 4. The current video files may be 50–100 MB each. Replace with web-ready MP4 files before public launch; otherwise the page may load slowly and the Git repository will grow quickly.
 5. GitHub Pages requires a deployment workflow for Vite's `dist/` output; it does not serve this source folder directly as a built React site.
+
+## Design notes
+
+- **Wordmark / display font:** Geom (OFL), self-hosted from `src/fonts/` — no Google Fonts request. Body is Manrope, labels are DM Mono (both via `@fontsource`).
+- **Blurred colour backgrounds:** `src/glow.jsx`. Each scene is a list of `[colour, shape]` layers — the Pen Tool → fill → Gaussian Blur workflow. Move a blob by changing its centre/radii in `blob(cx, cy, rx, ry)`, recolour it with the hex value, soften the whole scene with `blur`. Scenes: `hero`, `pujo`, `wedding`, `personal`, `contact`, `reel`, `viewer`.
+- **Photography:** justified rows (every row fills the width at one height, nothing cropped). Photo sizes are read at build time by `vite.config.js` (`virtual:media-sizes`), so the layout is ready before images load. Tune row height / photos per row in `justify()` in `src/main.jsx`.
+- **Graphic design:** one poster per row on phones, 2–3 masonry columns on wider screens.
+- **Viewer:** tap a photo, design or reel to open it. Swipe or use the arrows to step through; `Esc` closes. The backdrop is a blurred, full-strength copy of the work itself (reels use their thumbnail; reels with no thumbnail fall back to the `viewer` glow). Videos get a 1px cream border.

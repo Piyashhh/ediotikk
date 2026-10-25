@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowUpRight, ArrowDown, X, Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import '@fontsource-variable/manrope/wght.css';
@@ -6,18 +6,23 @@ import '@fontsource/dm-mono/400.css';
 import '@fontsource/dm-mono/500.css';
 import './style.css';
 import { Glow } from './glow.jsx';
+import sizes from 'virtual:media-sizes'; // build-time pixel sizes: see vite.config.js
 
 const EMAIL = 'biswaspiyas16@gmail.com';
 
 // Media is stored outside src/. New files are discovered by Vite; photo/design files sort numerically.
-const photoModules = import.meta.glob('../media/photography/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
-const designModules = import.meta.glob('../media/graphic-design/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
-const videoModules = import.meta.glob('../media/videos/*.{mp4,webm,mov}', { eager: true, query: '?url', import: 'default' });
-const thumbnailModules = import.meta.glob('../media/thumbnails/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
+const photoModules = import.meta.glob('/media/photography/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
+const designModules = import.meta.glob('/media/graphic-design/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
+const videoModules = import.meta.glob('/media/videos/*.{mp4,webm,mov}', { eager: true, query: '?url', import: 'default' });
+const thumbnailModules = import.meta.glob('/media/thumbnails/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' });
 const sortFiles = modules => Object.entries(modules).sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true })).map(([path, src]) => ({ path, src }));
 const fileMap = modules => Object.fromEntries(Object.entries(modules).map(([path, src]) => [path.split('/').pop(), src]));
-const photos = sortFiles(photoModules);
-const designs = sortFiles(designModules);
+const withSize = (dir, list) => list.map(p => {
+  const [w, h] = sizes[`${dir}/${p.path.split('/').pop()}`] || [3, 2];
+  return { ...p, w, h, ratio: w / h };
+});
+const photos = withSize('photography', sortFiles(photoModules));
+const designs = withSize('graphic-design', sortFiles(designModules));
 const videoFiles = fileMap(videoModules);
 const thumbnailFiles = fileMap(thumbnailModules);
 const pick = (files, name, exts) => exts.map(e => files[`${name}.${e}`]).find(Boolean);
@@ -34,7 +39,7 @@ const videos = [
 const galleries = {
   photo: photos.map((p, i) => ({ type: 'image', src: p.src, title: `Photo ${i + 1}` })),
   design: designs.map((p, i) => ({ type: 'image', src: p.src, title: `Design ${i + 1}` })),
-  video: videos.filter(v => v.file).map(v => ({ type: 'video', src: v.file, title: v.title, id: v.id })),
+  video: videos.filter(v => v.file).map(v => ({ type: 'video', src: v.file, thumb: v.thumb, title: v.title, id: v.id })),
 };
 const pad = n => String(n).padStart(2, '0');
 
@@ -46,6 +51,48 @@ const sites = [
   { id: 'personal', href: 'https://piyashhh.github.io/', stamp: 'EARLY EXPERIMENT', label: '03 / WEBSITE', name: 'Personal Homepage', blurb: 'An early experiment in building for the web.',
     art: <span className="personal-type">PERSONAL<br />HOMEPAGE<span>↗</span></span> },
 ];
+
+// Justified rows: every row fills the full width at one height, no cropping.
+// Row height aims for T; `max` caps photos per row so phones never get tiny thumbnails.
+const GAP = 8;
+function justify(items, W) {
+  const { T, max } = W < 600 ? { T: 220, max: 2 } : W < 1000 ? { T: 250, max: 3 } : { T: 290, max: 4 };
+  const rowHeight = row => (W - GAP * (row.length - 1)) / row.reduce((sum, e) => sum + e.item.ratio, 0);
+  const rows = []; let row = [];
+  const close = last => {
+    let height = rowHeight(row), center = false;
+    if (last && height > T * 1.6) { height = T * 1.6; center = true; } // a lone last photo would stretch huge: cap it and centre it
+    rows.push({ height, center, items: row.map(e => ({ ...e, width: Math.floor(e.item.ratio * height * 100) / 100 })) });
+    row = [];
+  };
+  items.forEach((item, index) => {
+    const entry = { item, index };
+    if (row.length && (row.length >= max || rowHeight([...row, entry]) < T * 0.62)) close(false);
+    row.push(entry);
+    if (rowHeight(row) <= T) close(false);
+  });
+  if (row.length) close(true);
+  return rows;
+}
+
+function JustifiedGrid({ items, render }) {
+  const ref = useRef(null);
+  const [width, setWidth] = useState(0);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const measure = () => setWidth(el.clientWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return <div className="photo-grid" ref={ref}>
+    {width > 0 && justify(items, width).map((row, i) =>
+      <div className={`photo-row${row.center ? ' center' : ''}`} key={i} style={{ height: row.height }}>
+        {row.items.map(e => render(e.item, e.index, { width: e.width, height: row.height }))}
+      </div>)}
+  </div>;
+}
 
 function SiteCard({ site }) {
   return <a className={`site-card site-${site.id}`} href={site.href} target="_blank" rel="noreferrer">
@@ -73,6 +120,7 @@ function App() {
   const isOpen = view !== null;
   const list = isOpen ? galleries[view.group] : [];
   const item = isOpen ? list[view.index] : null;
+  const ambient = item && (item.type === 'image' ? item.src : item.thumb); // blurred copy behind the work
 
   const open = (group, index) => { opener.current = document.activeElement; setView({ group, index }); };
   const close = useCallback(() => { setView(null); opener.current?.focus?.(); }, []);
@@ -98,11 +146,11 @@ function App() {
     catch { window.location.href = `mailto:${EMAIL}`; }
   }
 
-  const imageCard = (p, index, group) => {
+  const imageCard = (p, index, group, box) => {
     const title = `${group === 'photo' ? 'Photo' : 'Design'} ${index + 1}`;
-    return <button className={`work-card image-card ${group}`} key={p.path} onClick={() => open(group, index)} aria-label={`Open ${title}`}>
+    return <button className={`work-card image-card ${group}`} key={p.path} style={box} onClick={() => open(group, index)} aria-label={`Open ${title}`}>
       {!failedImages[p.path]
-        ? <img src={p.src} loading="lazy" decoding="async" alt={title} onError={() => setFailedImages(s => ({ ...s, [p.path]: true }))} />
+        ? <img src={p.src} width={p.w} height={p.h} loading="lazy" decoding="async" alt={title} onError={() => setFailedImages(s => ({ ...s, [p.path]: true }))} />
         : <div className="media-fallback"><span>{group === 'photo' ? 'PHOTOGRAPHY' : 'GRAPHIC DESIGN'}</span><b>{pad(index + 1)}</b></div>}
       <span className="card-index">{pad(index + 1)} <ArrowUpRight size={14} /></span>
     </button>;
@@ -137,7 +185,7 @@ function App() {
 
           <div className="subhead"><span>01</span><h3>Photography</h3><span className="eyebrow">STILLS</span></div>
           {photos.length
-            ? <div className="photo-grid">{photos.map((p, i) => imageCard(p, i, 'photo'))}</div>
+            ? <JustifiedGrid items={photos} render={(p, i, box) => imageCard(p, i, 'photo', box)} />
             : <div className="empty-state photo-empty"><span className="empty-mark">✳</span><div><b>Photography goes here.</b><p>Add numbered images to <code>media/photography/</code> — for example, <code>1.jpg</code>, <code>2.jpg</code>, <code>3.webp</code>.</p></div><span className="eyebrow">01—∞</span></div>}
 
           <div className="subhead"><span>02</span><h3>Video &amp; Editing</h3><span className="eyebrow">MOTION</span></div>
@@ -184,7 +232,9 @@ function App() {
     </div>
 
     {item && <div className="viewer" role="dialog" aria-modal="true" aria-label={item.title} onClick={close}>
-      <Glow scene="viewer" grain={false} />
+      {ambient
+        ? <img key={ambient} className="ambient" src={ambient} alt="" aria-hidden="true" decoding="async" />
+        : <Glow scene="viewer" grain={false} />}
       <button ref={closeBtn} className="viewer-close" onClick={close} aria-label="Close viewer"><X /></button>
       <div className="viewer-content" onClick={e => e.stopPropagation()} {...swipe}>
         <span className="eyebrow">{item.title}</span>
