@@ -33,6 +33,7 @@ const videos = [
   { id: 'reel-02', title: 'Reel 02', file: getVideo('reel-02'), thumb: getThumb('reel-02'), kind: 'VIDEO & EDITING' },
   { id: 'bts-01', title: 'Behind the Scenes', file: getVideo('bts-01'), thumb: getThumb('bts-01'), kind: 'VIDEO & EDITING' },
   { id: 'pujodex-promo', title: 'Pujodex Promo Film', file: getVideo('pujodex-promo'), thumb: getThumb('pujodex-promo'), kind: 'PERSONAL PROJECT' },
+  { id: 'engagement-01', title: 'Engagement Film', file: getVideo('engagement-01'), thumb: getThumb('engagement-01'), kind: 'VIDEO & EDITING' },
 ];
 
 // What the viewer can step through. One list per gallery.
