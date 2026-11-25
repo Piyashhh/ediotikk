@@ -175,7 +175,124 @@ input[type=file]{display:none}
 @media(min-width:850px){.hero{padding:34px 38px}.hero h1{font-size:72px}.stats{gap:12px}.action-card{min-height:130px;padding:18px}}
 @media(max-width:620px){.shell{padding:12px 14px 45px}.hero{padding:23px 21px;border-radius:21px;margin-top:18px}.hero:after{right:-160px}.stats{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px}.stat{padding:12px}.paper-grid{grid-template-columns:1fr}.action-grid{grid-template-columns:1fr 1fr}.action-card:last-child{grid-column:1/-1;min-height:96px}.library-list{grid-template-columns:1fr}.people-grid{grid-template-columns:1fr}.topbar{height:48px}.detail-card{border-radius:18px}.question-card{border-radius:18px}.match-tile{min-height:92px;padding:10px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Focused interface layer */
+:root{
+ --bg:#f5f4ef;--paper:#fffefa;--ink:#22251f;--muted:#72766e;--line:#e3e1d8;
+ --accent:#b95738;--accent-ink:#fffaf6;--lime:#e8edce;--green:#327451;--red:#b8473e;
+ --soft:#f0efe8;--shadow:0 10px 28px rgba(30,33,25,.055);--radius:18px;
+}
+:root[data-theme="dark"]{
+ --bg:#171a17;--paper:#222720;--ink:#f0f1e9;--muted:#abb0a4;--line:#3a4138;
+ --accent:#e27b58;--accent-ink:#181a16;--lime:#39432b;--green:#83c49b;--red:#ff9185;
+ --soft:#2a3029;--shadow:0 10px 28px rgba(0,0,0,.2);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);padding-bottom:calc(94px + env(safe-area-inset-bottom,0px));font-size:15px;line-height:1.55}
+.shell{max-width:780px;padding:14px 18px 38px}
+.topbar{height:54px;border:0;margin:0 0 12px}
+.brand{font-size:15px;letter-spacing:-.035em}
+.brand-mark{background:var(--accent);color:white;width:31px;height:31px;border-radius:10px}
+.top-actions{gap:7px}
+.icon-btn{width:42px;height:42px;border-radius:13px;background:transparent;border-color:transparent;font-size:17px}
+.icon-btn:hover{background:var(--soft)}
+.quiet-btn{display:none}
+.home-intro{padding:32px 0 22px;max-width:640px}
+.eyebrow{font:750 10px var(--mono);letter-spacing:.11em;color:var(--accent);text-transform:uppercase}
+.home-intro h1{font-size:clamp(35px,8vw,56px);line-height:1.02;letter-spacing:-.065em;margin:13px 0 11px;max-width:570px}
+.home-intro p{font-size:15px;color:var(--muted);max-width:480px;margin:0;line-height:1.55}
+.session-panel{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,4vw,25px);box-shadow:var(--shadow)}
+.panel-kicker{font:750 10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.session-panel h2{font-size:21px;letter-spacing:-.045em;margin:5px 0 4px}
+.session-panel .subcopy{font-size:12px;color:var(--muted);margin:0}
+.duration-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:19px 0 14px}
+.time-choice{min-height:68px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink);padding:10px 7px;text-align:center}
+.time-choice strong{display:block;font-size:17px;letter-spacing:-.04em}
+.time-choice span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+.time-choice[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--paper));box-shadow:inset 0 0 0 1px var(--accent)}
+.session-cta{width:100%;min-height:52px;font-size:14px;border-radius:14px}
+.session-note{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin:11px 0 0;text-align:center}
+.home-secondary{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:19px 2px 0;padding:15px 0;border-top:1px solid var(--line)}
+.home-secondary strong{display:block;font-size:13px}
+.home-secondary span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.text-link{color:var(--accent);font-size:12px;white-space:nowrap}
+.bottom-nav{position:fixed;z-index:20;left:50%;bottom:calc(9px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(560px,calc(100% - 22px));min-height:66px;padding:5px 8px;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 32px rgba(25,28,22,.12)}
+.bottom-nav button{border:0;border-radius:12px;background:transparent;color:var(--muted);font-size:11px;font-weight:750;min-height:52px;padding:6px}
+.bottom-nav button span{display:block;font-size:17px;line-height:1.15;margin-bottom:2px}
+.bottom-nav button[aria-current="page"]{background:var(--soft);color:var(--ink)}
+.page-title{margin:25px 0 17px}
+.page-title h1{font-size:clamp(30px,6vw,43px);letter-spacing:-.065em;margin:7px 0 5px}
+.page-title p{font-size:13px;color:var(--muted)}
+.filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,190px);gap:8px;margin:14px 0 16px}
+.search,.paper-select{min-height:46px;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:13px;min-width:0}
+.library-list{display:grid;grid-template-columns:1fr;gap:7px}
+.book-row{min-height:65px;padding:11px 13px;border-radius:13px}
+.book-index{flex-basis:34px;height:34px}
+.book-copy strong{font-size:13px}
+.book-copy small{font-size:10px}
+.book-level{font-size:10px}
+.empty{margin-top:10px}
+.library-extra{margin-top:22px;padding-top:17px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.library-extra p{font-size:12px;color:var(--muted);margin:0}
+.library-extra button{white-space:nowrap}
+.detail-wrap{max-width:700px}
+.back-line{margin:17px 0 12px}
+.detail-card{border-radius:20px;box-shadow:none;padding:clamp(18px,4vw,28px)}
+.detail-card h1{font-size:clamp(30px,7vw,44px);letter-spacing:-.065em}
+.core-box{background:var(--soft);color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:18px;margin:17px 0}
+.core-box .eyebrow{color:var(--accent)}
+.core-box p{font-size:16px;line-height:1.52}
+.detail-section{margin:15px 0}
+.detail-section h3{font-size:10px}
+.disclosure{border-top:1px solid var(--line);padding:13px 0}
+.disclosure:last-child{border-bottom:1px solid var(--line)}
+.disclosure summary{font-weight:750;font-size:13px;cursor:pointer;min-height:28px}
+.disclosure .anchor-list{margin-top:12px}
+.disclosure .people-grid{margin-top:12px}
+.detail-actions{margin-top:20px}
+.detail-actions .primary{width:100%;min-height:50px}
+.detail-actions .secondary{width:100%}
+.progress-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0 22px}
+.progress-stat{padding:14px 12px;background:var(--paper);border:1px solid var(--line);border-radius:14px;min-width:0}
+.progress-stat strong{display:block;font:800 23px/1.1 var(--mono);letter-spacing:-.07em}
+.progress-stat span{display:block;color:var(--muted);font-size:10px;margin-top:6px;line-height:1.25}
+.progress-paper{padding:14px 0;border-bottom:1px solid var(--line)}
+.progress-paper:first-child{border-top:1px solid var(--line)}
+.progress-paper .paper-foot{font-size:11px}
+.progress-paper .progress{margin-top:9px}
+.progress-tip{padding:15px;background:var(--soft);border-radius:14px;margin-top:19px}
+.progress-tip p{font-size:12px;color:var(--muted);margin:4px 0 0}
+.play-shell{max-width:650px;padding-top:5px}
+.play-nav{margin:10px 0 17px}
+.play-nav button{min-height:42px}
+.play-progress{height:5px}
+.play-meta{margin:14px 2px 9px;font-size:9px}
+.question-card{padding:clamp(19px,5vw,32px);border-radius:20px;box-shadow:none}
+.question-card h1{font-size:clamp(23px,5vw,32px);line-height:1.18;letter-spacing:-.05em}
+.option{min-height:52px;align-items:center;padding:12px 13px;font-size:13px}
+.option .letter{flex-basis:27px;height:27px}
+.recall-input{min-height:100px;font-size:14px}
+.primary,.secondary,.dark-btn,.danger-btn{min-height:48px}
+.confidence button{min-height:48px}
+.feedback{border-radius:13px}
+.lesson-card{background:var(--paper);border:1px solid var(--line);border-radius:21px;padding:clamp(20px,5vw,33px)}
+.lesson-card h1{font-size:clamp(27px,6vw,40px);line-height:1.1;letter-spacing:-.06em;margin:9px 0 15px}
+.lesson-core{font-size:17px;line-height:1.55;margin:0}
+.lesson-anchor{background:var(--soft);border-radius:13px;padding:14px;margin:17px 0;font-size:13px;line-height:1.5}
+.lesson-cta{width:100%;min-height:51px;margin-top:7px}
+.finish{margin:34px auto;box-shadow:none}
+.finish .score{font-size:60px}
+.settings-card{border-radius:16px;box-shadow:none}
+.footer-note{display:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(min-width:700px){.home-intro{padding-top:44px}.session-panel{max-width:590px}.detail-card{padding:30px}}
+@media(max-width:560px){.shell{padding:10px 14px 38px}.home-intro{padding:25px 0 18px}.home-intro h1{font-size:39px}.session-panel{padding:17px;border-radius:18px}.duration-options{gap:7px}.time-choice{min-height:64px}.filters{grid-template-columns:1fr}.progress-overview{gap:7px}.progress-stat{padding:12px 10px}.progress-stat strong{font-size:21px}.library-extra{align-items:flex-start;flex-direction:column}.bottom-nav{min-height:64px}.bottom-nav button{min-height:50px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
 </style>
+<!-- Cloudflare Web Analytics -->
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "84d98a56d86848238a3af04fad2540e7"}'></script>
+<!-- End Cloudflare Web Analytics -->
 </head>
 <body>
 <div id="app"></div>
@@ -499,6 +616,163 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('change',e=>{if(e.target.id==='import-file'&&e.target.files?.[0])importBackup(e.target.files[0])});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&R.page!=='home'){R.page='home';R.round=null;render()}});
+
+/* ===== focused experience overrides ===== */
+function header(){
+ return `<div class="topbar"><div class="brand"><span class="brand-mark">S7</span><span>RECALL</span></div><div class="top-actions"><button class="icon-btn" data-action="theme" aria-label="Switch colour theme">${G.theme==='dark'?'☼':'◐'}</button><button class="icon-btn" data-action="settings" aria-label="Settings">···</button></div></div>`;
+}
+function navBar(){
+ const page=R.page==='detail'?'library':R.page==='finish'?'home':R.page;
+ return `<nav class="bottom-nav" aria-label="Main navigation">
+  <button data-action="nav" data-value="home" aria-current="${page==='home'?'page':'false'}"><span>⌂</span>Learn</button>
+  <button data-action="nav" data-value="library" aria-current="${page==='library'?'page':'false'}"><span>▤</span>Papers</button>
+  <button data-action="nav" data-value="progress" aria-current="${page==='progress'?'page':'false'}"><span>◷</span>Progress</button>
+ </nav>`;
+}
+function home(){
+ const z=totals(),dueTexts=[...new Set(CARD_BANK.filter(c=>rec(c.id).seen&&rec(c.id).due<=Date.now()).map(c=>c.text))].length;
+ const touched=TEXTS.filter(t=>CARD_BANK.some(c=>c.text===t.id&&rec(c.id).seen)).length;
+ const freshTexts=TEXTS.length-touched;
+ const mins=R.duration||5;
+ return `<div class="shell">${header()}
+  <section class="home-intro"><div class="eyebrow">SEMESTER 7 · LEARNING</div><h1>Make a little progress.</h1><p>One idea at a time. Each session explains, checks and strengthens what you remember.</p></section>
+  <section class="session-panel" aria-label="Choose a learning session"><div class="panel-kicker">YOUR NEXT SESSION</div><h2>How much time have you got?</h2><p class="subcopy">Choose a pace. The session adapts to what you need to learn and review.</p>
+   <div class="duration-options" role="group" aria-label="Session length">
+    <button class="time-choice" data-action="duration" data-value="2" aria-pressed="${mins===2}"><strong>2 min</strong><span>One idea</span></button>
+    <button class="time-choice" data-action="duration" data-value="5" aria-pressed="${mins===5}"><strong>5 min</strong><span>A few ideas</span></button>
+    <button class="time-choice" data-action="duration" data-value="10" aria-pressed="${mins===10}"><strong>10 min</strong><span>Go deeper</span></button>
+   </div>
+   <button class="primary session-cta" data-action="start-session">Start ${mins}-minute session →</button>
+   <p class="session-note"><span>${dueTexts} topics ready to review</span><span>·</span><span>${freshTexts} new texts available</span></p>
+  </section>
+  <div class="home-secondary"><div><strong>${touched} of ${TEXTS.length} texts explored</strong><span>Your progress saves automatically on this device.</span></div><button class="text-link" data-action="nav" data-value="library">Browse papers →</button></div>
+ </div>${navBar()}`;
+}
+function library(){
+ const q=R.search.trim().toLowerCase(),list=TEXTS.filter(t=>(R.filter==='all'||t.p===R.filter)&&(!q||[t.t,t.a,t.core].join(' ').toLowerCase().includes(q)));
+ return `<div class="shell">${header()}<div class="page-title"><div class="eyebrow">PAPERS & TEXTS</div><h1>Find what you need.</h1><p>Open a text for its central idea, key details and a short guided session.</p></div>
+  <div class="filters"><input class="search" id="search" value="${esc(R.search)}" placeholder="Search title, writer or idea" aria-label="Search texts"><select class="paper-select" id="paper-filter" aria-label="Filter by paper"><option value="all" ${R.filter==='all'?'selected':''}>All five papers</option>${PAPERS.map(p=>`<option value="${p.id}" ${R.filter===p.id?'selected':''}>${p.code}</option>`).join('')}</select></div>
+  <div class="library-list">${list.map(t=>{const p=PAP[t.p],pr=textProgress(t);return `<button class="book-row" data-action="detail" data-value="${t.id}"><span class="book-index">${String(TEXTS.indexOf(t)+1).padStart(2,'0')}</span><span class="book-copy"><strong>${esc(t.t)}</strong><small>${esc(t.a)} · ${p.code}</small></span><span class="book-level">${pr===0?'NEW':pr>=70?'SOLID':pr+'%'}</span></button>`}).join('')||'<div class="empty">No texts match that search.</div>'}</div>
+  <div class="library-extra"><p>Want a different kind of practice? Connect texts with their central ideas.</p><button class="secondary" data-action="match">Connection challenge →</button></div>
+ </div>${navBar()}`;
+}
+function detail(id){
+ const t=TEXTS.find(x=>x.id===id);if(!t){R.page='library';return library()}
+ const p=PAP[t.p],pr=textProgress(t),people=t.people||[];
+ return `<div class="shell"><div class="detail-wrap">${header()}<div class="back-line"><button data-action="nav" data-value="library">← All texts</button><span class="mono" style="color:var(--muted)">${p.code} · ${pr===0?'NEW':pr+'% secure'}</span></div>
+  <article class="detail-card"><div class="detail-meta"><span>${p.name}</span><span>·</span><span>${t.f}</span></div><h1>${esc(t.t)}</h1><p class="byline">${esc(t.a)}</p>
+   <div class="core-box"><div class="eyebrow">THE CORE IDEA</div><p>${esc(t.core)}</p></div>
+   <details class="disclosure"><summary>Key things to remember (${t.pins.length})</summary><div class="anchor-list">${t.pins.map(x=>`<div class="anchor">${esc(x)}</div>`).join('')}</div></details>
+   ${people.length?`<details class="disclosure"><summary>People & their roles (${people.length})</summary><div class="people-grid">${people.map(x=>`<div class="person"><strong>${esc(x[0])}</strong><span>${esc(x[1])}</span></div>`).join('')}</div></details>`:''}
+   <div class="detail-actions"><button class="primary" data-action="study-text" data-value="${t.id}">Start a 2-minute lesson →</button></div>
+  </article></div></div>${navBar()}`;
+}
+function progressPage(){
+ const touched=TEXTS.filter(t=>CARD_BANK.some(c=>c.text===t.id&&rec(c.id).seen)).length;
+ const due=CARD_BANK.filter(c=>rec(c.id).seen&&rec(c.id).due<=Date.now()).length;
+ const mastered=CARD_BANK.filter(c=>rec(c.id).level>=4).length;
+ return `<div class="shell">${header()}<div class="page-title"><div class="eyebrow">YOUR LEARNING</div><h1>Progress, not pressure.</h1><p>Your understanding builds one retrieval at a time.</p></div>
+  <div class="progress-overview"><div class="progress-stat"><strong>${touched}/${TEXTS.length}</strong><span>Texts explored</span></div><div class="progress-stat"><strong>${due}</strong><span>Ready to review</span></div><div class="progress-stat"><strong>${G.streak}</strong><span>Day streak</span></div></div>
+  <div class="section-head"><div><h2>Across your papers</h2><p>Progress reflects repeated recall, not time spent reading.</p></div></div>
+  ${PAPERS.map(p=>{const n=paperProgress(p.id);return `<div class="progress-paper"><div class="paper-head"><div><div class="paper-code">${p.code}</div><h3 style="font-size:14px;margin:4px 0 0">${p.name}</h3></div><span class="paper-count">${n}%</span></div><div class="progress"><i style="width:${n}%"></i></div><div class="paper-foot"><span>${paperTexts(p.id).length} texts</span><span>${paperTexts(p.id).filter(t=>textProgress(t)>0).length} explored</span></div></div>`}).join('')}
+  <div class="progress-tip"><strong>${mastered} prompts feel strong</strong><p>Smart sessions prioritise due reviews and shaky ideas, while keeping new material in rotation.</p></div>
+  <div class="bottom-row"><button class="secondary" data-action="settings">Backup or manage data</button></div>
+ </div>${navBar()}`;
+}
+function pickSessionTexts(count,focus=null,paper='all'){
+ if(focus){const t=TEXTS.find(x=>x.id===focus);return t?[t]:[]}
+ let pool=TEXTS.filter(t=>paper==='all'||t.p===paper).map(t=>{
+  const cards=CARD_BANK.filter(c=>c.text===t.id),seen=cards.filter(c=>rec(c.id).seen),due=seen.filter(c=>rec(c.id).due<=Date.now()).length;
+  const avg=seen.length?seen.reduce((s,c)=>s+rec(c.id).level,0)/seen.length:0;
+  return {t,due,seen:seen.length,avg};
+ });
+ const due=shuffle(pool.filter(x=>x.due>0)).sort((a,b)=>b.due-a.due);
+ const weak=shuffle(pool.filter(x=>x.seen>0&&x.due===0)).sort((a,b)=>a.avg-b.avg);
+ const fresh=shuffle(pool.filter(x=>x.seen===0));
+ return [...due,...weak,...fresh].slice(0,count).map(x=>x.t);
+}
+function buildShortQueue(texts){
+ const queue=[];
+ for(const t of texts){
+  queue.push({id:'lesson:'+t.id,text:t.id,p:t.p,kind:'lesson',tag:'Understand',t});
+  const qs=CARD_BANK.filter(c=>c.text===t.id&&c.kind==='mcq'&&c.tag!=='Author');
+  const quiz=shuffle(qs).sort((a,b)=>{
+   const ar=rec(a.id),br=rec(b.id),as=ar.seen?(ar.due<=Date.now()?0:2):1,bs=br.seen?(br.due<=Date.now()?0:2):1;
+   return as-bs||(a.tag==='Core idea'?-1:0)-(b.tag==='Core idea'?-1:0);
+  })[0];
+  if(quiz)queue.push(quiz);
+  const recall=CARD_BANK.find(c=>c.text===t.id&&c.kind==='recall');if(recall)queue.push(recall);
+ }
+ return queue;
+}
+function startFastSession(minutes=5,focus=null,paper='all'){
+ const n=focus?1:({2:1,5:2,10:4}[Number(minutes)]||2),texts=pickSessionTexts(n,focus,paper),queue=buildShortQueue(texts);
+ if(!queue.length){R.page='home';render();return}
+ R.round={queue,index:0,startedXp:G.xp,correct:0,wrong:0,missed:[],retryIds:[],mode:'micro',duration:Number(minutes)||2};
+ R.page='play';render();
+}
+function roundCardView(){
+ const c=currentCard(),r=R.round;if(!c){finishRound();return ''}
+ const total=r.queue.length,idx=r.index+1,progress=(r.index/total)*100,t=c.t,p=PAP[t.p];
+ const top=`<div class="play-nav"><button data-action="leave-round">← Exit</button><div class="play-progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${r.index}"><i style="width:${progress}%"></i></div><span class="mono" style="color:var(--muted)">${idx}/${total}</span></div>`;
+ if(c.kind==='lesson')return `<div class="shell"><div class="play-shell">${top}<div class="play-meta"><span>${p.code} · ${esc(t.t)}</span><span>STEP 1 · UNDERSTAND</span></div><article class="lesson-card"><div class="eyebrow">THE MAIN IDEA</div><h1>${esc(t.t)}</h1><p class="lesson-core">${esc(t.core)}</p><div class="lesson-anchor"><strong>Keep this in mind</strong><br>${esc(t.pins[0]||t.hook)}</div><button class="primary lesson-cta" data-action="next-lesson">Got it — check my understanding →</button></article></div></div>`;
+ let body=`<div class="play-meta"><span>${p.code} · ${esc(t.t)}</span><span>${c.kind==='recall'?'STEP 3 · RECALL':'STEP 2 · CHECK'}</span></div><article class="question-card"><div class="eyebrow">${c.kind==='recall'?'WITHOUT OPTIONS':'CHECK YOUR UNDERSTANDING'}</div><h1>${esc(c.q)}</h1>`;
+ if(c.kind==='mcq')body+=`<div class="options">${c.o.map((o,i)=>`<button class="option" data-action="choose" data-value="${i}"><span class="letter">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+ else body+=`<p class="prompt-note">Try saying the answer before you reveal the key.</p><textarea class="recall-input" id="recall-answer" placeholder="Your explanation (optional)…" aria-label="Your explanation"></textarea><button class="primary reveal" data-action="reveal">Reveal the key idea</button>`;
+ body+='</article>';
+ return `<div class="shell"><div class="play-shell">${top}${body}</div></div>`;
+}
+function feedbackView(){
+ const c=currentCard(),f=R.round.feedback;if(!c||!f)return roundCardView();
+ const t=c.t,p=PAP[t.p];let content='';
+ if(c.kind==='mcq')content=`<div class="options">${c.o.map((o,i)=>`<button class="option ${o===c.a?'correct':i===f.choice?'wrong':''}" disabled><span class="letter">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+ else content=`${R.round.ownAnswer?`<div class="answer-box"><strong>Your explanation</strong><p>${esc(R.round.ownAnswer)}</p></div>`:''}<div class="answer-box"><strong>Key idea</strong><p>${esc(c.answer)}</p></div>`;
+ const note=c.kind==='mcq'?c.e:c.answer;
+ const decision=f.correct?`<p class="prompt-note">How well could you recall it?</p><div class="confidence"><button data-action="rate" data-value="sure">Solid — I knew it</button><button data-action="rate" data-value="shaky">Shaky — revisit it</button></div>`:`<div class="next-row"><button class="primary" data-action="wrong-next">I understand — continue</button></div>`;
+ return `<div class="shell"><div class="play-shell"><div class="play-nav"><button data-action="leave-round">← Exit</button><div class="play-progress"><i style="width:${(R.round.index/R.round.queue.length)*100}%"></i></div><span class="mono" style="color:var(--muted)">${R.round.index+1}/${R.round.queue.length}</span></div><div class="play-meta"><span>${p.code} · ${esc(t.t)}</span><span>${c.kind==='recall'?'RECALL':'CHECK'}</span></div><article class="question-card"><div class="eyebrow" style="color:${f.correct?'var(--green)':'var(--red)'}">${f.correct?'✓ RETRIEVED':'↻ LEARN FROM THIS'}</div><h1>${f.correct?'Good retrieval.':'Not quite. Here is the distinction.'}</h1>${content}<div class="feedback ${f.correct?'good':'bad'}"><strong>${f.correct?'Why it matters':'Remember this'}</strong><p>${esc(note)}</p></div>${decision}</article></div></div>`;
+}
+function play(){return R.round&&R.round.feedback?feedbackView():roundCardView()}
+function finish(){
+ const r=R.round,ideas=new Set(r.queue.filter(c=>c.kind==='lesson').map(c=>c.text)),miss=[...new Set(r.missed)].map(id=>TEXTS.find(t=>t.id===id)).filter(Boolean);
+ return `<div class="shell">${header()}<section class="finish"><div class="eyebrow">SESSION COMPLETE</div><div class="score">${ideas.size}</div><h1>Ideas strengthened.</h1><p>${r.correct} solid retrievals · ${r.wrong} things to revisit · +${G.xp-r.startedXp} XP</p><p>You worked through ${ideas.size} ${ideas.size===1?'text':'texts'}. Your progress is saved.</p>${miss.length?`<div class="missed-list"><strong>Worth another look</strong>${miss.map(t=>`<p>${esc(t.t)} — ${esc(t.hook)}</p>`).join('')}</div>`:''}<div class="finish-actions"><button class="primary" data-action="start-session">Another short session →</button><button class="secondary" data-action="nav" data-value="home">Back to Learn</button></div></section></div>${navBar()}`;
+}
+function render(){
+ document.documentElement.dataset.theme=G.theme==='dark'?'dark':'light';
+ const app=$('app');
+ const page=R.page==='home'?home():R.page==='library'?library():R.page==='detail'?detail(R.detail):R.page==='play'?play():R.page==='finish'?finish():R.page==='match'?match():R.page==='match-done'?matchDone():R.page==='progress'?progressPage():settings();
+ app.innerHTML=page;
+ if(R.page==='library'){$('search')?.addEventListener('input',e=>{const pos=e.target.selectionStart;R.search=e.target.value;const y=window.scrollY;render();const el=$('search');el?.focus();el?.setSelectionRange(pos,pos);window.scrollTo(0,y)});}
+}
+
+// Route the simplified controls into the existing spaced-repetition engine.
+R.duration=R.duration||5;
+actions.nav=v=>{R.page=v==='papers'?'library':v;R.round=null;R.search='';R.filter='all';render()};
+actions.duration=v=>{R.duration=Number(v)||5;render()};
+actions['start-session']=()=>startFastSession(R.duration||5);
+actions.quick=()=>startFastSession(R.duration||5);
+actions.weak=()=>startFastSession(5);
+actions.paper=v=>{R.filter=String(v);R.page='library';render()};
+actions['study-text']=v=>startFastSession(2,String(v));
+actions['next-lesson']=()=>{if(!R.round)return;R.round.index++;if(R.round.index>=R.round.queue.length)finishRound();else render()};
+actions.filter=v=>{R.filter=String(v);render()};
+document.addEventListener('change',e=>{if(e.target&&e.target.id==='paper-filter'){R.filter=e.target.value;render()}});
+
+
+// A longer session may contain 12 steps, so preserve one retry in every session size.
+function recordOutcome(c,outcome){
+ const prev=rec(c.id),r={...prev,seen:prev.seen+1};
+ if(outcome==='sure'){
+  r.level=Math.min(5,r.level+1);r.correct++;r.streak=(r.streak||0)+1;r.due=Date.now()+INTERVALS[r.level];G.xp+=10+(r.level===5?2:0);R.round.correct++;
+ }else if(outcome==='shaky'){
+  r.correct++;r.streak=0;r.due=Date.now()+10*60*1000;G.xp+=5;R.round.correct++;
+ }else{
+  r.level=Math.max(0,r.level-1);r.wrong++;r.streak=0;r.due=Date.now()+5*60*1000;G.xp+=1;R.round.wrong++;
+  if(!R.round.missed.includes(c.text))R.round.missed.push(c.text);
+  if(!R.round.retryIds.includes(c.id)&&R.round.queue.length<16){R.round.retryIds.push(c.id);R.round.queue.splice(Math.min(R.round.index+3,R.round.queue.length),0,c)}
+ }
+ G.cards[c.id]=r;save();
+}
+
 render();
 </script>
 </body>
