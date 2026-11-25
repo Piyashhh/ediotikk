@@ -773,6 +773,49 @@ function recordOutcome(c,outcome){
  G.cards[c.id]=r;save();
 }
 
+// Android/browser back navigation: keep a lightweight history of app screens.
+// The current round is preserved in the snapshot, so Back returns to the prior step.
+const renderView = render;
+let historyReady = false;
+let lastRouteKey = '';
+let restoringHistory = false;
+function routeSnapshot(){
+ return JSON.parse(JSON.stringify({page:R.page,filter:R.filter,search:R.search,detail:R.detail,round:R.round,match:R.match,duration:R.duration}));
+}
+function routeKey(s){
+ const r=s.round;
+ return [s.page,s.detail||'',r?`${r.index}:${!!r.feedback}:${r.queue?.length||0}`:'',s.match?.matched?.length||''].join('|');
+}
+function restoreRoute(s){
+ if(!s)return;
+ Object.assign(R,s);
+ render();
+}
+render = function(){
+ renderView();
+ const snap=routeSnapshot(),key=routeKey(snap);
+ if(!historyReady){
+  history.replaceState({s7Recall:true,snapshot:snap},'',location.href);
+  historyReady=true;lastRouteKey=key;return;
+ }
+ if(!restoringHistory&&key!==lastRouteKey){
+  history.pushState({s7Recall:true,snapshot:snap},'',location.href);
+  lastRouteKey=key;
+ }
+};
+window.addEventListener('popstate',e=>{
+ const current=routeSnapshot();
+ if(R.page==='play'&&!confirm('Leave this learning step? Your saved progress will remain.')){
+  history.pushState({s7Recall:true,snapshot:current},'',location.href);
+  return;
+ }
+ const snap=e.state?.s7Recall?e.state.snapshot:{page:'home',filter:'all',search:'',detail:null,round:null,match:null,duration:R.duration||5};
+ restoringHistory=true;
+ Object.assign(R,snap);
+ renderView();
+ lastRouteKey=routeKey(snap);
+ restoringHistory=false;
+});
 render();
 </script>
 </body>
