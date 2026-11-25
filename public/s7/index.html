@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f1e9">
+<meta name="description" content="A focused, adaptive learning game for Semester 7 English.">
+<title>S7 Recall — Learn it. Keep it.</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f4f1e9;--paper:#fffdf8;--ink:#1a1b19;--muted:#6c6d65;--line:#dedbd1;
+  --accent:#f15a36;--accent-ink:#fffaf4;--lime:#d9f278;--green:#28734e;--red:#b83e35;
+  --soft:#eeece3;--shadow:0 12px 34px rgba(30,28,20,.07);--radius:20px;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;--bg:#151713;--paper:#20231e;--ink:#f0f0e8;--muted:#a6aa9d;--line:#393d33;
+  --accent:#ff704d;--accent-ink:#171713;--lime:#d9f278;--green:#75c69a;--red:#ff8d7f;
+  --soft:#292d26;--shadow:0 12px 34px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:18px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+button:disabled{cursor:default;opacity:.56}
+#app{min-height:100vh}
+.shell{max-width:1040px;margin:0 auto;padding:20px 22px 64px}
+.topbar{height:54px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:850;letter-spacing:-.04em;font-size:17px}
+.brand-mark{display:grid;place-items:center;width:29px;height:29px;background:var(--ink);color:var(--bg);border-radius:9px;font:800 12px var(--mono);letter-spacing:-.08em}
+.top-actions{display:flex;align-items:center;gap:8px}
+.icon-btn,.quiet-btn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;min-height:38px;padding:7px 12px;font-size:12px;font-weight:700}
+.icon-btn{width:39px;padding:0;font-size:16px}
+.hero{position:relative;overflow:hidden;margin:24px 0 18px;padding:28px 30px 26px;border-radius:26px;background:var(--ink);color:var(--bg);box-shadow:var(--shadow)}
+.hero:after{content:"";position:absolute;width:280px;height:280px;right:-70px;top:-130px;border-radius:50%;background:var(--lime);opacity:.95;filter:blur(1px);pointer-events:none}
+.hero:before{content:"";position:absolute;width:180px;height:180px;right:75px;bottom:-150px;border-radius:50%;background:var(--accent);filter:blur(2px);pointer-events:none}
+.hero-inner{position:relative;z-index:1;max-width:620px}
+.eyebrow,.mono{font-family:var(--mono);text-transform:uppercase;letter-spacing:.09em;font-size:10px;font-weight:700}
+.hero .eyebrow{color:var(--lime)}
+.hero h1{font-size:clamp(38px,7vw,68px);line-height:.98;letter-spacing:-.075em;margin:14px 0 12px;max-width:580px}
+.hero p{color:color-mix(in srgb,var(--bg) 76%,transparent);font-size:14px;max-width:440px;margin:0}
+.hero-bottom{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:23px}
+.primary,.secondary,.dark-btn,.danger-btn{border:0;border-radius:12px;min-height:46px;padding:11px 16px;font-weight:800;font-size:13px;transition:transform .16s ease,filter .16s ease}
+.primary{background:var(--accent);color:var(--accent-ink)}
+.secondary{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.dark-btn{background:var(--ink);color:var(--bg)}
+.danger-btn{background:var(--red);color:#fff}
+.primary:hover,.secondary:hover,.dark-btn:hover,.danger-btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+.hero .primary{background:var(--lime);color:#1a1b19}
+.hero .secondary{background:transparent;border-color:rgba(255,255,255,.25);color:var(--bg)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 28px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:14px 15px;min-width:0}
+.stat .n{font:800 24px/1.1 var(--mono);letter-spacing:-.08em}
+.stat .k{margin-top:7px;color:var(--muted);font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:26px 0 12px}
+.section-head h2{font-size:19px;letter-spacing:-.045em;margin:0}
+.section-head p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.text-link{border:0;background:none;color:var(--muted);text-decoration:underline;text-underline-offset:3px;font-size:12px;font-weight:700;padding:7px 0}
+.paper-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.paper-card{display:block;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:16px;color:var(--ink);transition:border-color .15s,transform .15s}
+.paper-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.paper-head{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.paper-code{font:800 10px var(--mono);color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.paper-card h3{font-size:15px;line-height:1.25;letter-spacing:-.025em;margin:5px 0 0}
+.paper-count{font:700 10px var(--mono);color:var(--muted);white-space:nowrap}
+.progress{height:6px;border-radius:100px;background:var(--soft);overflow:hidden;margin-top:15px}
+.progress>i{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .35s ease}
+.paper-foot{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:var(--muted);font-size:11px}
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.action-card{border:1px solid var(--line);background:var(--paper);border-radius:17px;padding:15px;text-align:left;color:var(--ink);min-height:116px;transition:transform .15s,border-color .15s}
+.action-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.action-icon{font-size:21px;line-height:1}
+.action-card strong{display:block;margin-top:13px;font-size:14px;letter-spacing:-.025em}
+.action-card span{display:block;margin-top:3px;color:var(--muted);font-size:11px;line-height:1.35}
+.bottom-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.bottom-row button{flex:1 1 150px}
+.footer-note{font:10px var(--mono);color:var(--muted);text-align:center;margin:34px 0 0;letter-spacing:.04em}
+/* library */
+.page-title{margin:28px 0 18px}
+.page-title .eyebrow{color:var(--accent)}
+.page-title h1{font-size:clamp(31px,5vw,48px);letter-spacing:-.07em;line-height:1;margin:9px 0 7px}
+.page-title p{margin:0;color:var(--muted);font-size:13px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.search{flex:1 1 220px;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:11px 13px;font-size:13px}
+.pill{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:8px 12px;font-size:11px;font-weight:750}
+.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.library-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.book-row{display:flex;align-items:center;gap:12px;width:100%;min-width:0;text-align:left;padding:13px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:14px}
+.book-index{display:grid;place-items:center;flex:0 0 33px;height:33px;background:var(--soft);border-radius:10px;color:var(--muted);font:700 10px var(--mono)}
+.book-copy{min-width:0;flex:1}
+.book-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;letter-spacing:-.02em}
+.book-copy small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.book-level{font:700 10px var(--mono);color:var(--accent);white-space:nowrap}
+/* learning detail */
+.detail-wrap{max-width:760px;margin:0 auto}
+.back-line{display:flex;align-items:center;gap:12px;margin:24px 0 15px}
+.back-line button{border:0;background:none;color:var(--muted);padding:6px 0;font-weight:700;font-size:12px}
+.detail-card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:clamp(19px,4vw,30px);box-shadow:var(--shadow)}
+.detail-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--muted);font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.07em}
+.detail-card h1{font-size:clamp(30px,6vw,48px);letter-spacing:-.07em;line-height:1.02;margin:13px 0 6px}
+.byline{color:var(--muted);font-size:13px;margin:0 0 23px}
+.core-box{background:var(--ink);color:var(--bg);padding:19px;border-radius:16px;margin:17px 0 20px}
+.core-box .eyebrow{color:var(--lime)}
+.core-box p{font-size:17px;line-height:1.45;letter-spacing:-.025em;margin:9px 0 0}
+.detail-section{margin:22px 0}
+.detail-section h3{font:800 10px var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:0 0 10px}
+.anchor-list{display:grid;gap:8px;counter-reset:point}
+.anchor{display:flex;gap:12px;align-items:flex-start;padding:11px 12px;background:var(--soft);border-radius:12px;font-size:13px}
+.anchor:before{counter-increment:point;content:counter(point,decimal-leading-zero);font:700 10px var(--mono);color:var(--accent);padding-top:2px}
+.people-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.person{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.person strong{display:block;font-size:12px}
+.person span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.detail-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}
+/* play */
+.play-shell{max-width:700px;margin:0 auto;padding-top:8px}
+.play-nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:16px 0 18px}
+.play-nav button{border:0;background:none;color:var(--muted);font-size:12px;font-weight:750;padding:7px 0}
+.play-progress{flex:1;height:5px;background:var(--line);border-radius:99px;overflow:hidden;max-width:290px}
+.play-progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.play-meta{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.07em;margin:18px 2px 10px}
+.question-card{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,5vw,34px);box-shadow:var(--shadow)}
+.question-card h1{font-size:clamp(24px,5vw,35px);line-height:1.15;letter-spacing:-.055em;margin:13px 0 20px}
+.question-card .prompt-note{color:var(--muted);font-size:12px;margin-top:-10px;margin-bottom:18px}
+.options{display:grid;gap:9px}
+.option{display:flex;align-items:flex-start;gap:11px;width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:13px;padding:13px 14px;color:var(--ink);font-size:13px;line-height:1.4;transition:border-color .12s,background .12s}
+.option:hover:not(:disabled){border-color:var(--accent)}
+.option .letter{display:grid;place-items:center;flex:0 0 24px;height:24px;background:var(--soft);border-radius:7px;font:800 10px var(--mono);color:var(--muted)}
+.option.correct{border-color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--paper))}
+.option.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 9%,var(--paper))}
+.option.correct .letter{background:var(--green);color:#fff}
+.option.wrong .letter{background:var(--red);color:#fff}
+.feedback{margin-top:16px;padding:16px;border-radius:15px;background:var(--soft);border-left:4px solid var(--accent)}
+.feedback.good{border-left-color:var(--green)}.feedback.bad{border-left-color:var(--red)}
+.feedback strong{display:block;font-size:13px}
+.feedback p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+.feedback .answer-line{color:var(--ink);font-weight:700}
+.confidence{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.confidence button{min-height:43px;border-radius:11px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:12px;font-weight:800}
+.confidence button:first-child{background:var(--lime);border-color:var(--lime);color:#1a1b19}
+.recall-input{width:100%;min-height:88px;resize:vertical;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:13px;padding:12px;font-size:13px;margin:0 0 10px}
+.reveal{width:100%;margin-top:3px}
+.answer-box{padding:15px;background:var(--soft);border-radius:14px;margin:13px 0}
+.answer-box strong{font-size:13px}.answer-box p{font-size:13px;line-height:1.55;margin:7px 0 0}
+.next-row{display:flex;justify-content:flex-end;margin-top:13px}
+.next-row .primary{min-width:135px}
+/* completion */
+.finish{max-width:650px;margin:40px auto;background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:clamp(22px,5vw,38px);text-align:center;box-shadow:var(--shadow)}
+.finish .score{font:800 clamp(48px,10vw,74px)/1 var(--mono);letter-spacing:-.1em;margin:10px 0}
+.finish h1{font-size:29px;letter-spacing:-.06em;margin:8px 0}
+.finish p{font-size:13px;color:var(--muted)}
+.finish-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:21px}
+.missed-list{margin-top:22px;text-align:left;background:var(--soft);border-radius:14px;padding:14px}
+.missed-list strong{font:800 10px var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.missed-list p{margin:8px 0 0;color:var(--ink);font-size:12px}
+/* matching */
+.match-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+.match-tile{min-height:100px;border:1.5px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);padding:13px;text-align:left;font-size:12px;font-weight:750;line-height:1.4;transition:transform .15s,border-color .15s}
+.match-tile small{display:block;font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:7px}
+.match-tile.selected{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--paper));transform:translateY(-2px)}
+.match-tile.matched{border-color:var(--green);background:color-mix(in srgb,var(--green) 10%,var(--paper));opacity:.65}
+.match-tile.shake{border-color:var(--red)}
+.match-status{display:flex;justify-content:space-between;color:var(--muted);font:700 10px var(--mono);text-transform:uppercase;letter-spacing:.07em;margin-top:14px}
+/* settings */
+.settings-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px;margin:15px 0}
+.settings-card h3{margin:0 0 6px;font-size:15px}
+.settings-card p{margin:0 0 13px;color:var(--muted);font-size:12px}
+.settings-actions{display:flex;flex-wrap:wrap;gap:8px}
+input[type=file]{display:none}
+.empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px;font-size:13px}
+@media(min-width:850px){.hero{padding:34px 38px}.hero h1{font-size:72px}.stats{gap:12px}.action-card{min-height:130px;padding:18px}}
+@media(max-width:620px){.shell{padding:12px 14px 45px}.hero{padding:23px 21px;border-radius:21px;margin-top:18px}.hero:after{right:-160px}.stats{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px}.stat{padding:12px}.paper-grid{grid-template-columns:1fr}.action-grid{grid-template-columns:1fr 1fr}.action-card:last-child{grid-column:1/-1;min-height:96px}.library-list{grid-template-columns:1fr}.people-grid{grid-template-columns:1fr}.topbar{height:48px}.detail-card{border-radius:18px}.question-card{border-radius:18px}.match-tile{min-height:92px;padding:10px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+const PAPERS=[
+ {id:'16',code:'DSCC 16',name:'Indian Writing in English II',sub:'Translation'},
+ {id:'17',code:'DSCC 17',name:'Literary Theory II',sub:'Criticism'},
+ {id:'18',code:'DSCC 18',name:'European Classical Literature',sub:'Classical texts'},
+ {id:'19',code:'DSCC 19',name:'Women’s Writing',sub:'Poetry, fiction & ideas'},
+ {id:'20',code:'DSCC 20',name:'Postcolonial Literatures',sub:'Poetry, fiction & theory'}
+];
+const TEXTS=[
+ {id:'shroud',p:'16',t:'The Shroud',a:'Premchand',f:'Short story',hook:'A shroud becomes a feast.',core:'Ghisu and Madhav, a poor father and son, collect money for Madhav’s dying wife Budhiya. After she dies, they spend the money meant for her shroud on food and drink.',pins:['Budhiya is Madhav’s wife; she dies during childbirth while the men remain outside.','The village gives Ghisu and Madhav money for a shroud. They use it for a feast instead.','The ending is bitterly ironic: they turn their neglect into a story of generosity toward the dead.','The story asks us to see both their cruelty and the brutal poverty that has shaped their lives.'],people:[['Ghisu','Madhav’s father; cynical and hardened by poverty.'],['Madhav','Ghisu’s son and Budhiya’s husband.'],['Budhiya','Madhav’s wife, whose death exposes the men’s neglect.']],recall:'What makes the ending of “The Shroud” so bitterly ironic?',answer:'The money collected to give Budhiya a respectful burial is spent on food and drink. Ghisu and Madhav then justify their choice as though the dead woman would be pleased. The irony exposes their neglect and the dehumanising force of poverty.',qs:[
+  {q:'What do Ghisu and Madhav do with the money collected for Budhiya’s shroud?',o:['Buy food and drink with it.','Pay for a doctor.','Send it to Budhiya’s family.','Buy a new house.'],a:0,e:'They spend the shroud money on a feast instead of buying the cloth. That shocking choice drives the ending.'},
+  {q:'Which reading goes beyond simply calling the two men “lazy”?',o:['The story shows how crushing poverty can deform human feeling, while still making their neglect disturbing.','The story says poverty automatically makes everyone kind.','The story celebrates wealthy village landlords.','The story argues that Budhiya caused the family’s problems.'],a:0,e:'The story does not excuse the men. It places their behaviour inside a system of hunger, exploitation and lost dignity.'}
+ ]},
+ {id:'quilt',p:'16',t:'The Quilt',a:'Ismat Chughtai',f:'Short story',hook:'A secret moves beneath a quilt.',core:'A child narrator remembers staying with Begum Jan, a neglected wife who grows intensely attached to her masseuse, Rabbu. The moving quilt becomes a suggestive image for a desire that the household refuses to name.',pins:['The story is told through the memory and limited understanding of a young girl.','Begum Jan’s husband, the Nawab, neglects her; Rabbu gives her attention and physical comfort.','The quilt’s strange movements suggest what the narrator cannot fully understand or openly describe.','The story exposes gendered confinement, silence and the policing of women’s desire.'],people:[['Begum Jan','A neglected wife whose dependence on Rabbu becomes central.'],['Rabbu','Begum Jan’s masseuse and close companion.'],['The narrator','A young girl whose limited viewpoint shapes the story.'],['Nawab Sahib','Begum Jan’s husband, who ignores her emotional and sexual needs.']],recall:'Why is the child narrator and the quilt imagery important?',answer:'The child does not fully understand what she witnesses, so the story communicates through hints, fear and images rather than direct explanation. The quilt hides the adult relationship while making its presence impossible to ignore.',qs:[
+  {q:'What does the quilt mainly do in the story?',o:['It becomes a suggestive image that hides and reveals Begum Jan’s private desire.','It proves that Begum Jan is wealthy.','It is a symbol of the narrator’s school life.','It shows that Rabbu is afraid of the dark.'],a:0,e:'The quilt’s movements allow Chughtai to suggest a forbidden subject through a child’s partial understanding.'},
+  {q:'Which social condition is most directly exposed?',o:['A wife’s confinement and neglect within a patriarchal household.','The freedom of women to choose public office.','The collapse of a royal army.','The danger of modern machines.'],a:0,e:'Begum Jan has wealth and status but is emotionally neglected and denied a recognised space for her desire.'}
+ ]},
+ {id:'rebati',p:'16',t:'Rebati',a:'Fakir Mohan Senapati',f:'Short story',hook:'A girl’s wish to learn meets old prejudice.',core:'Rebati is a young Odia girl encouraged by her father to study. A cholera epidemic destroys her family and teacher; her grandmother blames Rebati’s education, revealing the power of superstition and resistance to women’s learning.',pins:['Rebati’s father, Shyambandhu, supports her education; the teacher Basudev teaches her.','Her grandmother opposes the idea of a girl receiving formal education.','Cholera kills members of the household and Basudev; the family’s world collapses.','The grandmother wrongly treats education as the cause of misfortune. The epidemic—not learning—causes the deaths.','The story is an early landmark of modern Odia short fiction and a critique of social conservatism.'],people:[['Rebati','A young girl eager to learn.'],['Shyambandhu','Her father, who supports her education.'],['Basudev','The village teacher who teaches Rebati.'],['Grandmother','Opposes girls’ education and blames Rebati for the tragedy.']],recall:'What is the difference between the actual cause of the tragedy and the grandmother’s explanation?',answer:'Cholera causes the deaths and the family’s collapse. The grandmother blames Rebati’s education, revealing superstition and hostility toward women’s learning. The story does not show education as the cause.',qs:[
+  {q:'Who encourages Rebati to study?',o:['Her father, Shyambandhu.','Her grandmother.','The village landlord.','A British officer.'],a:0,e:'Shyambandhu supports her education and arranges for Basudev to teach her.'},
+  {q:'What does the grandmother blame for the family’s misfortune?',o:['Rebati’s education.','A failed harvest.','A war with a neighbouring village.','A theft by Basudev.'],a:0,e:'Her accusation reveals superstition and the social belief that educating girls brings trouble. The epidemic is the actual cause of the deaths.'}
+ ]},
+ {id:'gitanjali',p:'16',t:'Gitanjali XXVII and XCVII',a:'Rabindranath Tagore',f:'Poetry · devotional lyrics',hook:'The search for divine light; the shift from play to awe.',core:'In XXVII, the speaker searches for spiritual light and must kindle the lamp of love through desire and life. In XCVII, a playful closeness with the divine gives way to awe and reverence.',pins:['XXVII opens with a desperate search for light: spiritual longing must be made alive through the speaker’s own effort.','The lamp is present but unlit; the speaker must kindle the lamp of love “with thy life”.','XCVII remembers a carefree, companion-like relationship with the divine.','At the end of XCVII, the speaker suddenly sees the world standing in awe before the divine.','The poems are from Tagore’s English Gitanjali (Song Offerings), his own English renderings of the poems.'],people:[],recall:'How do the moods of Gitanjali XXVII and XCVII differ?',answer:'XXVII is urgent and restless: the speaker searches for divine light and asks for the lamp of love to be kindled. XCVII begins with playful intimacy with the divine, then turns toward awe and reverence when the speaker recognises the sacred presence.',qs:[
+  {q:'What is the speaker asking for in Gitanjali XXVII?',o:['Spiritual light and the power to kindle the lamp of love.','A crown and a royal kingdom.','A return to childhood games with friends.','A victory in battle.'],a:0,e:'The poem turns the image of an unlit lamp into a plea for spiritual awakening and active longing.'},
+  {q:'What changes near the end of Gitanjali XCVII?',o:['Playful closeness becomes awe before the divine.','The speaker rejects the divine completely.','A private argument becomes a public trial.','The speaker decides to leave the country.'],a:0,e:'The poem moves from carefree companionship to a sudden awareness of the sacred world.'}
+ ]},
+ {id:'void',p:'16',t:'The Void',a:'G. M. Muktibodh',f:'Poetry · modernist',hook:'Inner emptiness grows teeth and spreads.',core:'The poem imagines an inner void as a dark, hungry force with jaws and carnivorous teeth. It spreads from person to person, turning inner emptiness into social cruelty and destruction.',pins:['The void is not a peaceful blank; it is described as hungry, violent and self-absorbed.','Jaws, teeth and a pond of blood make inner emptiness feel physically dangerous.','The void spreads when people pass their destructive habits and actions to others.','The poem connects private moral emptiness with wider social violence and death.'],people:[],recall:'Why does the poem represent the void as something that spreads?',answer:'The void is more than one person’s sadness. It becomes destructive when people pass cruelty, anger and emptiness to others. The image suggests a social chain reaction that can damage an entire community.',qs:[
+  {q:'What do the jaws and carnivorous teeth suggest?',o:['That the void is destructive and capable of consuming people.','That the poem is mainly about a meal.','That the speaker is describing a harmless dream.','That nature always protects human beings.'],a:0,e:'The violent bodily imagery makes inner emptiness seem hungry, aggressive and dangerous.'},
+  {q:'How does the void become a social danger?',o:['People spread it through their actions, passing destruction to others.','It stays locked inside one person forever.','It disappears when people become wealthy.','It is caused only by the weather.'],a:0,e:'The poem shows emptiness reproducing itself through human behaviour, like a contagious force.'}
+ ]},
+ {id:'waris',p:'16',t:'I Say Unto Waris Shah',a:'Amrita Pritam',f:'Poetry · Partition lament',hook:'A poet calls Punjab’s old voice to witness Partition.',core:'Amrita Pritam addresses the Punjabi poet Waris Shah and asks him to witness the suffering caused by Partition. The land associated with Heer and Ranjha is now filled with the grief and violence of countless women and families.',pins:['Waris Shah was an eighteenth-century Punjabi Sufi poet best known for his version of Heer-Ranjha.','Pritam invokes him because he once gave voice to Heer’s grief; now countless Punjabi women are suffering.','The poem uses images of corpses, poisoned rivers and blood-red land to represent Partition violence.','It is a lament for Punjab and a plea for compassion, memory and humanity.'],people:[['Waris Shah','The poet addressed by Pritam; associated with the romance Heer-Ranjha.'],['Heer','The heroine whose grief Waris Shah gave poetic voice to.']],recall:'Why does Amrita Pritam call upon Waris Shah?',answer:'Waris Shah gave voice to Heer’s sorrow in the famous Punjabi romance. Pritam asks him to rise again because, after Partition, countless women and families in Punjab are suffering and need someone to speak for them.',qs:[
+  {q:'Why is Waris Shah the person addressed in the poem?',o:['He gave poetic voice to Heer’s grief in the Punjabi romance Heer-Ranjha.','He was the British official who divided Punjab.','He was the commander of the army in the Trojan War.','He wrote The Home and the World.'],a:0,e:'Pritam invokes a poet who once voiced one woman’s pain to witness the suffering of many during Partition.'},
+  {q:'What historical suffering drives the poem?',o:['The violence and displacement of the 1947 Partition of Punjab.','The cholera epidemic in Rebati.','The Trojan War.','The Mau Mau uprising in Kenya.'],a:0,e:'The poem is a direct lament for Partition’s bloodshed, displacement and destruction of human relationships.'}
+ ]},
+ {id:'home-world',p:'16',t:'The Home and the World',a:'Rabindranath Tagore',f:'Novel',hook:'Love, nationalism and the danger of political manipulation.',core:'Bimala is drawn between her liberal, principled husband Nikhil and the forceful nationalist Sandip. Through their competing ideas, the novel questions nationalism when passion, pressure and self-interest replace ethical freedom.',pins:['Bimala, Nikhil and Sandip are the three central voices in the novel’s narrative.','Nikhil supports Bimala’s independence and believes freedom cannot be forced.','Sandip uses passionate Swadeshi rhetoric and draws Bimala into his political orbit.','The novel questions whether a political cause remains moral when it manipulates people or excuses violence.','“Home” and “world” suggest the tension between private life and public politics.'],people:[['Bimala','Nikhil’s wife; experiences political and personal awakening.'],['Nikhil','Her husband; advocates ethical, non-coercive freedom.'],['Sandip','A charismatic Swadeshi leader whose rhetoric can be manipulative.']],recall:'What is the central contrast between Nikhil and Sandip?',answer:'Nikhil believes freedom must be ethical and freely chosen; he refuses to force Bimala or others. Sandip uses emotional nationalist rhetoric and is willing to manipulate people for his cause. Their contrast tests the morality of nationalism.',qs:[
+  {q:'What does Nikhil believe about freedom?',o:['It must be ethical and freely chosen, not forced.','It requires blind obedience to a leader.','It is valuable only when it brings wealth.','It should be limited to the home.'],a:0,e:'Nikhil’s liberal ideal is based on individual freedom, self-respect and moral responsibility.'},
+  {q:'What does the novel examine through Bimala’s attraction to Sandip?',o:['How political passion can manipulate private feeling and ethical judgement.','How the Trojan War began.','How women secretly learn to read in nineteenth-century Bengal.','How a miser protects a pot of gold.'],a:0,e:'Bimala’s experience reveals the tension between personal awakening, nationalism and political manipulation.'}
+ ]},
+ {id:'silence-court',p:'16',t:'Silence! The Court Is in Session',a:'Vijay Tendulkar',f:'Play',hook:'A mock trial exposes a real social judgement.',core:'A travelling amateur theatre group stages a mock court case. The game turns cruel when the group puts Leela Benare’s private life on trial, exposing the double standards used to control women.',pins:['Leela Benare is a schoolteacher and the central target of the mock trial.','The “court” begins as a theatrical game but becomes a weapon against Benare.','The group uses Benare’s unmarried pregnancy and private life as weapons of public humiliation.','The play examines gender, respectability, power, cruelty and the violence of public judgement.'],people:[['Leela Benare','A teacher whose private life is exposed and judged.'],['Samant','A local man who becomes involved in the group’s mock trial.'],['Kashikar','A senior member who helps direct the proceedings.'],['Sukhatme','A lawyer-like participant in the mock trial.'],['Ponkshe','A member of the amateur theatre group.']],recall:'How does the mock trial become a real attack on Benare?',answer:'The group stops treating the trial as a game and uses Benare’s unmarried pregnancy and private life to condemn her. The scene reveals how social power and male respectability can humiliate and silence a woman.',qs:[
+  {q:'Who is put on trial when the group’s game turns personal?',o:['Leela Benare.','Bimala.','Begum Jan.','Dopdi Mejhen.'],a:0,e:'Benare is the teacher whose private life becomes the target of the group’s mock court.'},
+  {q:'What does the play expose most sharply?',o:['The hypocrisy and gendered double standards behind public morality.','The fairness of every legal system.','The glory of a military victory.','The beauty of an idealised village life.'],a:0,e:'The mock trial reveals how a group can use morality as a tool to shame and control a woman.'}
+ ]},
+ {id:'eliot',p:'17',t:'Tradition and the Individual Talent',a:'T. S. Eliot',f:'Literary criticism',hook:'A new poem changes the tradition it inherits.',core:'Eliot argues that a poet must develop a historical sense: the past remains active in the present, and every genuinely new work changes how earlier works are understood. He also argues for the impersonality of poetry.',pins:['Tradition is not inherited automatically; it requires effort and knowledge.','The “historical sense” means feeling the past as both past and still present.','A new work enters an existing literary order and slightly changes the relationships among earlier works.','Eliot compares the poet’s mind to a catalyst: personal feelings and experiences are transformed into “art emotion”.','“Escape from personality” does not mean poetry has no feeling; it means the poem is not simply the writer’s private confession.'],people:[],recall:'Explain Eliot’s two linked ideas: historical sense and impersonality.',answer:'Historical sense means understanding earlier literature as still present and active. A new work changes the existing literary order. Impersonality means the poet transforms personal material into art rather than simply pouring private emotion onto the page.',qs:[
+  {q:'What does Eliot mean by the “historical sense”?',o:['Knowing the past as both past and active in the present.','Copying only the writer’s immediate predecessors.','Ignoring earlier literature to become original.','Remembering only dates and biographies.'],a:0,e:'For Eliot, tradition requires awareness of the whole literary past as a living order.'},
+  {q:'What does the platinum catalyst analogy explain?',o:['The poet’s mind transforms feelings and experiences into a new artistic result without making the poem a direct confession.','A poem should contain no emotion at all.','A poet must write only about science.','A poem is valuable only if it is autobiographical.'],a:0,e:'The catalyst analogy explains poetic impersonality: the mind transforms its material into art.'}
+ ]},
+ {id:'pater',p:'17',t:'Conclusion to Studies in the History of the Renaissance',a:'Walter Pater',f:'Aesthetic criticism',hook:'Live with alertness; notice each moment intensely.',core:'Pater urges readers to meet experience with intense attention. His “hard, gem-like flame” image describes a life of heightened awareness, where fleeting moments of beauty, feeling and knowledge are fully experienced.',pins:['The famous phrase is “to burn always with this hard, gem-like flame”.','Life is brief, so people should notice differences and intensity instead of drifting through habit.','Art can sharpen perception and make experience more vivid.','The conclusion values intense aesthetic experience, but it should not be reduced to careless pleasure-seeking.','The passage is a key statement associated with aestheticism and “art for art’s sake”.'],people:[],recall:'What does Pater mean by living with a “hard, gem-like flame”?',answer:'He means living with alert, intense awareness: noticing beauty, feeling and knowledge while they are present instead of allowing habit to make every experience seem identical. The image is about the intensity of experience and perception.',qs:[
+  {q:'What does the “hard, gem-like flame” stand for?',o:['An intensely alert way of experiencing life.','A literal fire used in Renaissance painting.','A rejection of all beauty and sensation.','A political slogan for nationalism.'],a:0,e:'Pater asks us to experience moments intensely and to notice their individual quality.'},
+  {q:'Which statement is the safest reading of Pater’s conclusion?',o:['It values heightened aesthetic awareness; it is not simply an instruction to chase pleasure without thought.','It says habits are the best way to live.','It argues that art has no connection with experience.','It asks readers to avoid beauty and knowledge.'],a:0,e:'The passage gives priority to vivid perception and the shortness of life. “Pleasure only” is too crude a summary.'}
+ ]},
+ {id:'eagleton',p:'17',t:'Literature and History',a:'Terry Eagleton',f:'Marxist literary criticism',hook:'A literary work is made inside history, not outside it.',core:'Eagleton explains that Marxist criticism reads literature through the historical and social conditions that produce it. It studies form, style and meaning—not just the social facts mentioned in a story.',pins:['Marxist criticism is not merely a “sociology of literature”.','A literary work’s forms, styles and meanings must be understood in relation to its history.','The economic “base” concerns material production and social relations; the “superstructure” includes institutions and forms of consciousness such as ideology.','Literature is not a mechanical mirror of the economy; its relation to history is complex.','Ideology means the ideas and values through which people understand and experience society.'],people:[],recall:'Why is Eagleton’s Marxist criticism more than simply finding social references in a text?',answer:'It asks how historical and social conditions shape the work’s form, style and meaning. It does not merely count references to workers or describe publication history. It studies how literature participates in ideology and in the wider social process.',qs:[
+  {q:'What does Eagleton say Marxist literary criticism must study?',o:['A work’s forms, styles and meanings as products of a particular history.','Only the author’s private feelings.','Only the number of working-class characters.','Only the grammar of the text.'],a:0,e:'Eagleton insists that close attention to literary form and meaning must be connected to history.'},
+  {q:'What is “ideology” in this context?',o:['Ideas and values through which people experience and understand society.','A list of poetic metres.','A type of dramatic stage.','A purely private dream with no social connection.'],a:0,e:'Eagleton uses ideology for socially shaped ideas, values and feelings that help people make sense of their world.'}
+ ]},
+ {id:'woolf',p:'17',t:'Modern Fiction',a:'Virginia Woolf',f:'Literary criticism',hook:'Fiction should follow the mind’s moving life.',core:'Woolf attacks writers she calls “materialists” for giving too much weight to external detail, plot and convention. She wants fiction to capture the shifting flow of consciousness and lived experience.',pins:['Woolf names H. G. Wells, Arnold Bennett and John Galsworthy among the “materialists” she criticises.','She argues that materialists mistake external detail for the most important part of life.','The mind receives countless impressions, some tiny and fleeting, others powerful.','Her “luminous halo” image describes life as a continuous flow of consciousness, not a neat row of events.','Woolf’s argument supports formal experiment and attention to inner experience.'],people:[['H. G. Wells','One of the “materialist” novelists Woolf criticises.'],['Arnold Bennett','One of the “materialist” novelists Woolf criticises.'],['John Galsworthy','One of the “materialist” novelists Woolf criticises.']],recall:'What is wrong with the “materialists” according to Woolf?',answer:'Woolf thinks they focus too much on external facts, objects, plot and conventional structure. She wants fiction to capture the many impressions and shifting thoughts that make up inner life.',qs:[
+  {q:'Who are Woolf’s “materialists”?',o:['Wells, Bennett and Galsworthy.','Eliot, Pater and Eagleton.','Homer, Horace and Ovid.','Achebe, Walcott and Neruda.'],a:0,e:'Woolf uses the label for novelists who give priority to external details and conventional construction.'},
+  {q:'What does the “luminous halo” image suggest?',o:['Life as a continuous flow of impressions and consciousness.','A perfectly ordered plot with fixed stages.','A literal ring of light around a character.','A list of historical dates.'],a:0,e:'The image suggests the ongoing, shifting inner experience that Woolf wants fiction to represent.'}
+ ]},
+ {id:'iliad',p:'18',t:'The Iliad, Books I–II',a:'Homer',f:'Epic poetry',hook:'Achilles’ anger begins with an insult; the army nearly breaks.',core:'Book I centres on the quarrel between Achilles and Agamemnon: after Apollo sends a plague, Agamemnon returns Chryseis but takes Briseis from Achilles. In Book II, a deceptive dream nearly sends the Greek army home before Odysseus restores order.',pins:['Chryses asks Agamemnon to return his daughter Chryseis; Agamemnon refuses and Apollo sends a plague.','Agamemnon gives up Chryseis but takes Achilles’ captive Briseis as compensation. Achilles withdraws from battle.','Achilles’ mother Thetis asks Zeus to let the Greeks suffer so Achilles’ honour is restored.','In Book II, Zeus sends Agamemnon a deceptive dream; the army rushes toward the ships when Agamemnon tests them.','Odysseus rallies the army and beats back Thersites; Book II includes the Catalogue of Ships.'],people:[['Achilles','Greek warrior whose anger drives the opening.'],['Agamemnon','Greek commander who takes Briseis from Achilles.'],['Chryseis','Daughter of Chryses; Agamemnon’s captive.'],['Briseis','Achilles’ captive, taken by Agamemnon.'],['Chryses','Priest of Apollo and father of Chryseis.'],['Thetis','Achilles’ mother, who appeals to Zeus.'],['Odysseus','Restores order when the Greek army rushes to leave.'],['Thersites','A soldier whose attack on the leaders is silenced by Odysseus.'],['Nestor','Elder adviser who tries to calm Achilles and Agamemnon.']],recall:'Keep Chryseis and Briseis separate. What happens to each in Book I?',answer:'Chryseis is Agamemnon’s captive. Her father Chryses asks for her return; Agamemnon refuses, so Apollo sends a plague. Agamemnon finally returns Chryseis but takes Briseis, who belongs to Achilles, as compensation. Achilles then withdraws.',qs:[
+  {q:'Which statement correctly distinguishes Chryseis and Briseis?',o:['Agamemnon holds Chryseis; Achilles holds Briseis, and Agamemnon later takes Briseis.','Achilles holds Chryseis; Agamemnon holds Briseis throughout.','Both women are daughters of Nestor.','Briseis is the priest who asks Apollo for help.'],a:0,e:'This distinction matters: Chryseis is returned to her father, while Briseis is taken from Achilles, provoking his withdrawal.'},
+  {q:'What is the key crisis in Book II?',o:['A deceptive dream leads Agamemnon to test the army, which nearly rushes home.','Achilles kills Hector.','The Greeks build the wooden horse.','Odysseus returns home to Ithaca.'],a:0,e:'Book II includes Zeus’s false dream, the near-flight of the army, Odysseus restoring order and the Catalogue of Ships.'}
+ ]},
+ {id:'oedipus',p:'18',t:'Oedipus the King',a:'Sophocles',f:'Greek tragedy',hook:'The detective discovers he is the criminal.',core:'A plague afflicts Thebes, and King Oedipus promises to find the murderer of the former king, Laius. His investigation reveals that he himself unknowingly killed Laius and married his own mother, Jocasta.',pins:['The oracle says Thebes will be freed from plague when Laius’s killer is found and punished.','Oedipus investigates the murder with determination, believing he is protecting the city.','The blind prophet Tiresias knows the truth but initially refuses to speak plainly.','Jocasta’s account of Laius’s death helps Oedipus recognise the connection.','The play explores fate, free will, knowledge, blindness, truth and tragic irony.'],people:[['Oedipus','King of Thebes who investigates Laius’s murder.'],['Jocasta','Oedipus’s wife, later revealed to be his mother.'],['Creon','Jocasta’s brother, who brings the oracle’s message.'],['Tiresias','Blind prophet who knows Oedipus’s identity and guilt.'],['Laius','The former king whose murder is being investigated.']],recall:'Why is Oedipus’s investigation an example of tragic irony?',answer:'Oedipus searches for Laius’s killer to save Thebes, but the evidence gradually reveals that he himself is the killer. The person trying to expose the truth is also the person most threatened by it.',qs:[
+  {q:'Why does Oedipus begin investigating Laius’s murder?',o:['The oracle says the killer must be found to end the plague in Thebes.','He wants to win the Trojan War.','Tiresias asks him to find a lost treasure.','Jocasta wants to leave the city.'],a:0,e:'The oracle links the city’s plague to the unpunished murder of the former king.'},
+  {q:'What does Tiresias reveal?',o:['That Oedipus himself is connected to Laius’s murder.','That Creon stole the royal crown.','That the plague was caused by Apollo’s anger at Chryseis.','That Jocasta is planning a war.'],a:0,e:'Tiresias knows the truth that Oedipus is not yet ready to accept.'}
+ ]},
+ {id:'bacchus',p:'18',t:'The Story of Bacchus',a:'Ovid',f:'Myth · narrative episode',hook:'A king’s refusal to honour a god ends in ruin.',core:'In Ovid’s account, King Pentheus rejects Bacchus and mocks his worship. The god’s power is revealed through Acoetes’ story and the Bacchic frenzy that ultimately destroys Pentheus.',pins:['Bacchus is the Roman name for Dionysus, the god associated with wine and ecstatic worship.','Pentheus refuses to recognise Bacchus and tries to suppress the god’s rites.','Acoetes recounts how sailors tried to bind Bacchus and were transformed into dolphins.','Pentheus is torn apart by the Bacchants, among them his own mother Agave.','The episode warns against arrogance and refusing to recognise divine power.'],people:[['Bacchus','God whose worship Pentheus rejects.'],['Pentheus','King who tries to suppress Bacchus’s rites.'],['Acoetes','Sailor who tells Pentheus of the god’s power.'],['Agave','Pentheus’s mother, caught in the Bacchic frenzy.']],recall:'What is Pentheus punished for, and how does the story show Bacchus’s power?',answer:'Pentheus rejects and mocks Bacchus and tries to suppress his worship. Acoetes’ story of the sailors’ transformation warns him, but he refuses to listen. The Bacchants, including his mother Agave, tear him apart.',qs:[
+  {q:'Who is Pentheus?',o:['The king who rejects Bacchus and tries to suppress his worship.','The sailor who tells the story of the pirates.','A Greek warrior who withdraws from Troy.','The father of Chryseis.'],a:0,e:'Pentheus refuses to recognise Bacchus and becomes the victim of the god’s power.'},
+  {q:'What happens to the sailors who try to bind Bacchus?',o:['They are transformed into dolphins.','They become kings of Thebes.','They steal Euclio’s gold.','They are welcomed into the Greek army.'],a:0,e:'Acoetes recounts the sailors’ punishment as proof of Bacchus’s divine power.'}
+ ]},
+ {id:'pot-gold',p:'18',t:'The Pot of Gold',a:'Plautus',f:'Roman comedy',hook:'A miser guards gold so fiercely that it controls him.',core:'Euclio discovers a pot of gold and becomes obsessed with guarding it. While he fears theft, his daughter Phaedria’s pregnancy and Lyconides’ confession create a second plot that exposes the confusion and damage caused by greed.',pins:['Euclio is a miser who hides and repeatedly moves his pot of gold.','Megadorus asks to marry Euclio’s daughter Phaedria, unaware that she is pregnant by Lyconides.','Lyconides eventually admits what happened and wants to marry Phaedria.','Lyconides’ slave Strobilus steals the pot of gold.','The surviving ancient play breaks off before its original ending; some translations supply a reconstructed or adapted ending.'],people:[['Euclio','Miser who is obsessed with protecting his pot of gold.'],['Phaedria','Euclio’s daughter.'],['Lyconides','Young man who has made Phaedria pregnant and seeks to marry her.'],['Megadorus','Wealthy older neighbour who asks to marry Phaedria.'],['Strobilus','Slave who steals the pot of gold.'],['Staphyla','Euclio’s old female servant.']],recall:'What are the two plots that become tangled in The Pot of Gold?',answer:'One plot follows Euclio’s obsessive guarding of the gold. The other concerns Phaedria’s pregnancy by Lyconides and Megadorus’s proposed marriage. The stolen pot and Lyconides’ confession bring the plots together.',qs:[
+  {q:'What is Euclio mainly obsessed with?',o:['Guarding a pot of gold he has discovered.','Winning a war against Troy.','Becoming a famous poet.','Educating Rebati.'],a:0,e:'The pot controls Euclio’s thoughts and actions; his fear of losing it drives the comedy.'},
+  {q:'What should you remember about the ending of the surviving ancient play?',o:['The original text breaks off; some editions add or reconstruct an ending.','The original contains a complete wedding scene in every edition.','Euclio dies before the pot is discovered.','The play ends with the Trojan army arriving.'],a:0,e:'The surviving Latin text is incomplete at the end. A translation or performance may supply a plausible ending.'}
+ ]},
+ {id:'horace',p:'18',t:'Satires I:IV',a:'Horace',f:'Roman satire',hook:'A defence of satire as thoughtful, controlled conversation.',core:'Horace explains and defends his satirical method. He values a conversational style that corrects vice without becoming uncontrolled personal abuse, and compares his own practice with the earlier satirist Lucilius.',pins:['Horace distinguishes his controlled, polished satire from Lucilius’s looser and more abundant writing.','He presents satire as close to everyday conversation rather than grand epic.','He says his father taught him moral lessons by pointing out examples of good and bad behaviour.','The satire attacks faults and foolishness more than it pursues personal revenge.','The poem is both a moral defence and a discussion of how satire should be written.'],people:[['Horace','Roman poet who explains his satirical method.'],['Lucilius','Earlier Roman satirist whom Horace compares himself with.']],recall:'How does Horace defend his kind of satire?',answer:'He presents it as polished, conversational and morally useful. It should expose foolishness and vice without becoming reckless abuse. He also explains that his father’s practical moral teaching shaped his outlook.',qs:[
+  {q:'Which earlier satirist does Horace compare himself with?',o:['Lucilius.','Ovid.','Plautus.','Homer.'],a:0,e:'Horace discusses Lucilius as the predecessor whose style he both acknowledges and criticises.'},
+  {q:'What kind of satire does Horace defend?',o:['Controlled, conversational satire that corrects faults rather than indulging in personal abuse.','A form of epic that praises military conquest.','A private diary with no moral purpose.','A play built around a mock courtroom.'],a:0,e:'Horace values wit, polish and ethical purpose rather than uncontrolled invective.'}
+ ]},
+ {id:'dickinson',p:'19',t:'I Cannot Live With You',a:'Emily Dickinson',f:'Poetry',hook:'Love is real, but every route to union is blocked.',core:'The speaker tells a beloved that they cannot live together, but imagines that death and the afterlife cannot provide a simple reunion either. The poem turns love into a series of paradoxes and impossible conditions.',pins:['The repeated opening idea is that the speaker cannot live with the beloved.','The poem tests several imagined routes to union: ordinary life, death, judgement and heaven.','Its argument moves through paradoxes rather than a simple story.','The speaker’s love is intense, but religious and existential barriers make union seem impossible.'],people:[],recall:'How does Dickinson build the poem around impossibility?',answer:'The speaker considers life, death and the afterlife, but each imagined path to reunion creates another barrier. The repeated “cannot” turns the poem into a chain of paradoxes about love, religion and separation.',qs:[
+  {q:'What is the central situation in the poem?',o:['The speaker cannot be united with the beloved either through ordinary life or through an easy idea of death.','The speaker celebrates a joyful wedding.','The speaker remembers a childhood picnic.','The speaker argues that love is always simple.'],a:0,e:'The poem explores love through the impossibility of being together in life, death and the imagined afterlife.'},
+  {q:'Which technique best describes the poem’s movement?',o:['A chain of paradoxes and repeated impossibilities.','A chronological account of a journey.','A comic courtroom dialogue.','A catalogue of Greek ships.'],a:0,e:'Dickinson keeps testing possible routes to union, only to show why each one fails.'}
+ ]},
+ {id:'browning',p:'19',t:'How Do I Love Thee?',a:'Elizabeth Barrett Browning',f:'Poetry · Sonnet 43',hook:'A speaker counts love across every part of life.',core:'In Sonnet 43, the speaker tries to count the ways she loves the beloved. Her love reaches through daily life, moral feeling, the soul and even the hope of loving beyond death.',pins:['The poem is Sonnet 43 from Sonnets from the Portuguese.','The opening question is answered by a repeated attempt to measure the many dimensions of love.','Love is described as spiritual, moral, free and present in ordinary daily life.','The final movement imagines love continuing after death, if God allows it.'],people:[],recall:'What makes the speaker’s love larger than a passing romantic feeling?',answer:'The speaker describes love as part of daily life, moral purpose, freedom and the soul. The poem also imagines that love may continue beyond death, making it spiritual as well as emotional.',qs:[
+  {q:'“How Do I Love Thee?” is which poem?',o:['Sonnet 43 from Sonnets from the Portuguese.','A scene from Wuthering Heights.','A poem about the Mau Mau uprising.','A devotional song from Gitanjali.'],a:0,e:'It is Sonnet 43, one of Elizabeth Barrett Browning’s best-known love sonnets.'},
+  {q:'How does the poem present love?',o:['As spiritual, moral and woven into daily life, with a hope of lasting beyond death.','As a brief feeling based only on physical beauty.','As something that can be counted only in money.','As a form of political propaganda.'],a:0,e:'The poem expands love from everyday action to spiritual depth and the possibility of eternity.'}
+ ]},
+ {id:'advice-women',p:'19',t:'Advice to Women',a:'Eunice de Souza',f:'Poetry',hook:'Cats model distance, independence and dark humour.',core:'The speaker tells women to keep cats to learn how to cope with the “otherness” of lovers. The advice is ironic and unsentimental: a cat’s independence becomes a model for surviving emotional distance.',pins:['The poem begins with the striking advice: “Keep cats”.','The cat becomes a figure for independence and for accepting that another person has an inner life of their own.','The line “Otherness is not always neglect” complicates the idea that distance always means rejection.','The final image of the cat’s surprised stare and “die alone” gives the poem its dark humour.','The plain, everyday language makes the ironic advice sound casual and sharp.'],people:[],recall:'Why is the advice to “keep cats” ironic rather than simply practical?',answer:'The cat becomes a comic model for emotional independence. The poem suggests that lovers have an “otherness” that cannot be controlled, and that women should not make their entire identity depend on a lover’s attention.',qs:[
+  {q:'What do cats represent in the poem?',o:['Independence and the ability to live with another being’s distance.','Perfect obedience to a lover.','The power of the colonial state.','The innocence of childhood.'],a:0,e:'The cat is a model of self-possession: it comes close on its own terms and remains an independent being.'},
+  {q:'What effect does the final phrase “to die alone” create?',o:['Dark humour that pushes the poem’s advice toward self-reliance.','A happy promise of marriage.','A literal prediction about a pet.','A heroic speech before battle.'],a:0,e:'The ending is comic but bleak. It refuses sentimental comfort and makes the advice more unsettling.'}
+ ]},
+ {id:'wuthering',p:'19',t:'Wuthering Heights',a:'Emily Brontë',f:'Novel',hook:'A destructive love drives revenge across generations.',core:'Set on the Yorkshire moors, the novel follows the intense bond between Catherine Earnshaw and Heathcliff and the revenge Heathcliff pursues after social rejection and loss. The consequences reach into a second generation.',pins:['The novel is set around Wuthering Heights and Thrushcross Grange on the Yorkshire moors.','Lockwood is the first narrator; much of the history is told to him by Nelly Dean.','Catherine Earnshaw and Heathcliff share an intense bond, but class and social ambition shape their choices.','Heathcliff’s revenge harms the next generation as well as the people who first hurt him.','The novel uses a layered narrative and explores love, class, cruelty, revenge and inheritance.'],people:[['Heathcliff','A foundling who becomes consumed by love and revenge.'],['Catherine Earnshaw','Loves Heathcliff but chooses to marry Edgar Linton.'],['Edgar Linton','Catherine’s socially respectable husband.'],['Nelly Dean','Housekeeper and major narrator of the family history.'],['Lockwood','Tenant whose visit begins the framed narrative.'],['Hareton','Hindley’s son, drawn into Heathcliff’s revenge.'],['Hindley','Catherine’s brother, who mistreats Heathcliff.'],['Isabella','Edgar’s sister, who marries Heathcliff.']],recall:'How is the novel’s story told, and why does that matter?',answer:'Lockwood begins as an outside narrator, but Nelly Dean tells him much of the family history. This layered narration means readers receive events through memory and perspective rather than through a single all-knowing voice.',qs:[
+  {q:'Who tells Lockwood much of the history of the two houses?',o:['Nelly Dean.','Jocasta.','Begum Jan.','Leela Benare.'],a:0,e:'Nelly is the housekeeper and the main storyteller within Lockwood’s frame narrative.'},
+  {q:'What does Heathcliff’s revenge affect?',o:['A second generation as well as the people involved in the original conflict.','Only the weather on the moors.','The Greek army at Troy.','The royal court of Thebes.'],a:0,e:'The novel follows the long reach of Heathcliff’s revenge into the lives of the younger generation.'}
+ ]},
+ {id:'draupadi',p:'19',t:'Draupadi',a:'Mahasweta Devi',f:'Short story · translation',hook:'A captured rebel refuses the dignity her captors claim to control.',core:'Dopdi Mejhen, an Adivasi rebel, is captured by the state forces led by Senanayak and subjected to sexual violence. At the end, she refuses to cover her wounded body, turning the captors’ power into a public confrontation.',pins:['The original Bengali story is by Mahasweta Devi; the English translation is by Gayatri Chakravorty Spivak.','Dopdi Mejhen is an Adivasi/Santhal woman involved in resistance.','Senanayak is the officer directing the counter-insurgency operation.','After being sexually assaulted, Dopdi refuses the clothes offered to cover her body.','Her final refusal confronts the men with the violence they have committed and reverses the expected power dynamic.'],people:[['Dopdi Mejhen','Adivasi rebel whose resistance continues after capture.'],['Senanayak','Military officer directing the operation against the rebels.']],recall:'Why is Dopdi’s final refusal powerful?',answer:'The soldiers have used sexual violence to reduce her to a defeated body. By refusing to cover herself and confronting them, Dopdi denies them the shame and control they expect to impose. The ending turns her injured body into an act of resistance.',qs:[
+  {q:'Who translated Mahasweta Devi’s “Draupadi” into English?',o:['Gayatri Chakravorty Spivak.','Rassundari Devi.','Eunice de Souza.','Elizabeth Barrett Browning.'],a:0,e:'The English translation is by Gayatri Chakravorty Spivak.'},
+  {q:'What does Dopdi do at the end?',o:['She refuses to cover her violated body and confronts her captors.','She accepts a marriage proposal from Senanayak.','She escapes by joining the Greek army.','She apologises for wanting an education.'],a:0,e:'Her refusal is an act of defiance that exposes the violence and false authority of her captors.'}
+ ]},
+ {id:'bliss',p:'19',t:'Bliss',a:'Katherine Mansfield',f:'Short story',hook:'A perfect evening cracks open.',core:'Bertha Young feels an intense happiness and believes she shares a special connection with Pearl Fulton. The image of a blossoming pear tree seems to reflect her joy, until she discovers that Pearl and her husband Harry are having an affair.',pins:['Bertha’s happiness seems almost physical and overwhelming at the beginning.','The pear tree in the garden becomes an image of beauty, harmony and Bertha’s emotional state.','Bertha believes Pearl Fulton understands her in a special way.','The ending reveals that Harry and Pearl are lovers, breaking Bertha’s imagined harmony.','The story explores appearance versus reality, marriage, desire and self-deception.'],people:[['Bertha Young','The protagonist, overwhelmed by a feeling of bliss.'],['Harry','Bertha’s husband, who is having an affair with Pearl.'],['Pearl Fulton','A guest Bertha idealises and believes she understands.']],recall:'How does the pear tree connect to the story’s ending?',answer:'The pear tree appears beautiful and complete, reflecting Bertha’s sense of harmony. When she discovers Harry’s affair with Pearl, her understanding of her marriage collapses, while the tree remains apparently unchanged. The contrast sharpens the irony.',qs:[
+  {q:'What does Bertha discover at the end?',o:['Harry and Pearl are having an affair.','Pearl is her long-lost sister.','Harry has stolen a pot of gold.','The pear tree has died.'],a:0,e:'Bertha’s discovery destroys the perfect picture she had built around her marriage and Pearl.'},
+  {q:'What role does the pear tree play?',o:['It reflects Bertha’s idealised sense of beauty and harmony.','It is the place where the Trojan army hides.','It symbolises a court of law.','It is a literal family tree explaining the plot.'],a:0,e:'The tree’s apparent perfection contrasts with the betrayal Bertha discovers.'}
+ ]},
+ {id:'wollstonecraft',p:'19',t:'A Vindication of the Rights of Woman',a:'Mary Wollstonecraft',f:'Political philosophy',hook:'Women are not born inferior; they are denied equal development.',core:'Wollstonecraft argues that women are rational human beings, not naturally weak or foolish. Their apparent inferiority is produced by poor education and social expectations, so they need serious education and independence.',pins:['The work argues for women’s rational and moral equality.','Wollstonecraft rejects the idea that women are naturally inferior to men.','She criticises education that trains women to be decorative, dependent and pleasing rather than thoughtful.','Education should develop reason, virtue and independence in both women and men.','The work connects women’s freedom with the health of society, family life and citizenship.'],people:[],recall:'What does Wollstonecraft identify as the root of women’s apparent inferiority?',answer:'She argues that society gives women an inadequate education and trains them to depend on pleasing men. Their apparent weakness is therefore socially produced, not a natural lack of reason.',qs:[
+  {q:'What is Wollstonecraft’s central argument?',o:['Women are rational beings and should receive serious education.','Women are naturally incapable of reason.','Education should be reserved for wealthy men.','Women should be judged only by beauty.'],a:0,e:'Wollstonecraft argues that women’s capacities are held back by social training and unequal education.'},
+  {q:'What kind of education does she criticise?',o:['One that makes women dependent and decorative instead of developing reason.','One that teaches women mathematics and history.','One that encourages independent thought.','One that prepares all people for citizenship.'],a:0,e:'She rejects education designed mainly to make women attractive and obedient.'}
+ ]},
+ {id:'amar-jiban',p:'19',t:'Amar Jiban',a:'Rassundari Devi',f:'Autobiography',hook:'A woman secretly teaches herself to read.',core:'In Amar Jiban (“My Life”), Rassundari Devi records her life as a woman in nineteenth-century Bengal and describes secretly teaching herself to read despite domestic restrictions.',pins:['Amar Jiban was published in 1876 and is often credited as the first full-length autobiography by an Indian woman.','Rassundari Devi secretly learned to read while managing demanding household duties.','She used a religious text, Chaitanya Bhagavata, as part of her self-education.','The autobiography records both personal experience and the restrictions placed on women.','Her act of writing her own life challenges the silence expected of women.'],people:[['Rassundari Devi','Author and narrator who secretly teaches herself to read.']],recall:'Why is Amar Jiban important beyond being a personal life story?',answer:'It gives a woman’s account of her own life in a society that restricted women’s education and self-expression. Her secret learning and act of writing make the autobiography a record of women’s experience and resistance.',qs:[
+  {q:'Who wrote Amar Jiban?',o:['Rassundari Devi.','Mahasweta Devi.','Ismat Chughtai.','Amrita Pritam.'],a:0,e:'Rassundari Devi wrote the Bengali autobiography Amar Jiban.'},
+  {q:'How does Rassundari Devi learn to read?',o:['She teaches herself secretly despite domestic restrictions.','She studies at a university abroad.','She is taught by a British army officer.','She learns from a travelling theatre group.'],a:0,e:'Her self-education is a central act of determination in the autobiography.'}
+ ]},
+ {id:'neruda',p:'20',t:'Tonight I Can Write',a:'Pablo Neruda',f:'Poetry',hook:'Night makes a lost love speak again.',core:'The speaker remembers a lost beloved under the night sky and writes through the sadness of separation. The poem moves between memory, longing and the painful possibility that love has ended.',pins:['The poem is commonly known as Poem 20 from Twenty Love Poems and a Song of Despair.','The night sky and stars create a setting for memory and loneliness.','The repeated ability to write the saddest lines becomes a way of facing loss.','The speaker both remembers the beloved and recognises that the relationship may be over.','The poem’s emotional movement shifts between love remembered and love lost.'],people:[],recall:'Why does the speaker repeat the idea of writing the saddest lines?',answer:'Writing becomes a way to express and process the pain of lost love. The repeated phrase gives the poem a musical structure and shows the speaker returning to the same grief even while trying to accept the loss.',qs:[
+  {q:'What is the speaker writing about?',o:['A lost love remembered with sadness.','A revolution in ancient Rome.','A young girl’s first school lesson.','A quarrel between Greek kings.'],a:0,e:'The poem centres on memory, separation and the sadness of a love that may have ended.'},
+  {q:'What does the night setting help create?',o:['A mood of loneliness, reflection and memory.','A cheerful public celebration.','A courtroom atmosphere.','A comic misunderstanding about money.'],a:0,e:'The night sky becomes the emotional space in which the speaker remembers the beloved.'}
+ ]},
+ {id:'walcott',p:'20',t:'A Far Cry from Africa',a:'Derek Walcott',f:'Poetry',hook:'A speaker is divided between African and English inheritances.',core:'Walcott’s poem responds to the Mau Mau uprising in Kenya. The speaker feels torn between African and English ancestry, condemning colonial violence while also recoiling from the brutality of the conflict.',pins:['The poem responds to the Mau Mau uprising against British colonial rule in Kenya (1952–1960).','The speaker feels divided by having both African and English inheritances.','The poem does not offer an easy choice between two identities or a simple celebration of violence.','Images of blood, animals and landscape connect political conflict to the natural world.','The central tension is the painful legacy of colonialism and divided identity.'],people:[],recall:'Why is the speaker “divided” in A Far Cry from Africa?',answer:'The speaker feels connected to both African and English histories. The Mau Mau conflict makes those inheritances appear to pull in opposite directions, leaving the speaker unable to choose a simple side.',qs:[
+  {q:'Which historical event informs the poem?',o:['The Mau Mau uprising in Kenya against British colonial rule.','The 1947 Partition of Punjab.','The Trojan War.','The French Revolution.'],a:0,e:'The poem responds to the Mau Mau uprising and the violence surrounding British colonial rule in Kenya.'},
+  {q:'What creates the speaker’s inner conflict?',o:['A mixed African and English inheritance that makes the colonial conflict deeply personal.','A dispute over a hidden pot of gold.','A conflict between two Greek gods.','A disagreement about women’s education in Odisha.'],a:0,e:'The speaker feels that both sides belong to his history, making the conflict an identity crisis as well as a political one.'}
+ ]},
+ {id:'revolving-days',p:'20',t:'Revolving Days',a:'David Malouf',f:'Poetry',hook:'A remembered first love returns through ordinary objects.',core:'The speaker looks back on the year he fell in love. Everyday details—especially shirts and the feeling of wearing them—become ways of remembering desire, time and the self as a lover.',pins:['The poem looks back on a remembered period of falling in love.','The speaker recalls ordinary clothing and the bodily sensations connected with that time.','The memory is both personal and reflective: the past returns through concrete details.','The title suggests the cyclical return of days, memory and feeling.','The poem treats ordinary objects as carriers of emotional history.'],people:[],recall:'How do ordinary details help the speaker remember love?',answer:'The speaker remembers shirts, touch and bodily sensations rather than describing love only as an abstract idea. Ordinary objects become memory triggers that bring a past emotional self back into view.',qs:[
+  {q:'What period of life does the speaker revisit?',o:['The year he fell in love.','His childhood during the Trojan War.','The day he became king of Thebes.','The final days of the British Empire.'],a:0,e:'The poem begins by looking back at the year when the speaker fell in love.'},
+  {q:'Why are details such as shirts important?',o:['They turn ordinary objects and sensations into carriers of memory.','They prove that the poem is a shopping list.','They symbolise the armour of a Greek warrior.','They describe a courtroom costume.'],a:0,e:'The poem uses everyday material details to make memory and feeling concrete.'}
+ ]},
+ {id:'mountain',p:'20',t:'The Voice of the Mountain',a:'Mamang Dai',f:'Poetry',hook:'Landscape carries memory, language and many voices.',core:'The poem gives voice to a landscape shaped by time, human movement and changing languages. Its shifting voices and images connect the ancient land with new encounters and the struggle to communicate across difference.',pins:['Mamang Dai writes from the cultural and geographical world of Arunachal Pradesh and the Adi community.','The poem brings together rivers, territories, memory and encounters between people.','The line of thought “forever ancient and new” holds continuity and change together.','The poem’s voice is layered; it should not be reduced to a simple, single speaker describing scenery.','Language, signs and objects such as the spear and fish suggest communication across cultural difference.'],people:[],recall:'What does the mountain/landscape preserve in the poem?',answer:'The landscape carries memories of people, movement, history and changing languages. It connects what is ancient with what is new, and becomes a place where different voices and cultures meet.',qs:[
+  {q:'Which tension is central to the poem’s image of place?',o:['The land is both ancient and continually changing.','The land exists outside all human history.','The land belongs only to one fixed language.','The land is a battlefield in the Trojan War.'],a:0,e:'The poem’s phrase “forever ancient and new” joins long memory with ongoing change.'},
+  {q:'What do the changing languages and attempts to make signs suggest?',o:['The difficulty and necessity of communication across difference.','A refusal to communicate with anyone.','A perfect world without cultural change.','A legal argument in a mock court.'],a:0,e:'The poem considers how people meet and try to communicate across linguistic and cultural boundaries.'}
+ ]},
+ {id:'things-fall-apart',p:'20',t:'Things Fall Apart',a:'Chinua Achebe',f:'Novel',hook:'A man, a community and a world under colonial pressure.',core:'The novel follows Okonkwo, a respected Igbo man in Umuofia, whose fear of weakness shapes his choices. The arrival of Christian missionaries and colonial rule disrupts the community and contributes to his tragic downfall.',pins:['The novel is set mainly in the Igbo community of Umuofia in what is now Nigeria.','Okonkwo fears resembling his father Unoka, whom he sees as weak and unsuccessful.','His rigid idea of masculinity damages his relationships, including with Nwoye.','Missionaries and the colonial administration introduce new religious and political power.','The novel gives detailed attention to Igbo society rather than presenting it as a culture without order or history.'],people:[['Okonkwo','Respected wrestler and farmer whose fear of weakness drives him.'],['Unoka','Okonkwo’s father, remembered as poor and gentle.'],['Nwoye','Okonkwo’s son, drawn toward Christianity.'],['Ikemefuna','Boy placed in Okonkwo’s household who becomes close to Nwoye.'],['Ezinma','Okonkwo’s daughter, whom he deeply values.'],['Obierika','Okonkwo’s thoughtful friend.'],['Ekwefi','Okonkwo’s wife and Ezinma’s mother.']],recall:'How do Okonkwo’s personal flaw and colonial change combine in the novel?',answer:'Okonkwo’s fear of appearing weak makes him rigid and often cruel, damaging relationships inside his family and community. Missionaries and colonial government then disrupt the social order he is trying to defend, contributing to his downfall.',qs:[
+  {q:'Where is most of Things Fall Apart set?',o:['The Igbo community of Umuofia.','The Yorkshire moors.','Ancient Thebes.','A Roman street in Athens.'],a:0,e:'Achebe sets the novel in the Igbo world of Umuofia before and during colonial disruption.'},
+  {q:'What is Okonkwo’s deepest fear?',o:['Being seen as weak like his father Unoka.','Losing a pot of gold.','Being unable to write poetry.','Being mistaken for a Greek king.'],a:0,e:'His fear of resembling Unoka shapes his harsh ideas about masculinity and success.'}
+ ]},
+ {id:'empire-writes-back',p:'20',t:'The Empire Writes Back',a:'Bill Ashcroft, Gareth Griffiths & Helen Tiffin',f:'Postcolonial theory',hook:'Colonised writers reshape the language of empire.',core:'Ashcroft, Griffiths and Tiffin explain how writers from colonised societies respond to imperial power through language and literature. Two key strategies are abrogation and appropriation.',pins:['The book is a foundational work in postcolonial literary studies.','It studies writing produced in the context and aftermath of colonial power.','Abrogation rejects the claim that colonial English is the only correct or authoritative form.','Appropriation takes the coloniser’s language and reshapes it to express local experience, voices and cultural forms.','The title captures the idea that colonised writers answer back rather than remain silent recipients of imperial culture.'],people:[['Bill Ashcroft','Co-author of the study.'],['Gareth Griffiths','Co-author of the study.'],['Helen Tiffin','Co-author of the study.']],recall:'Explain the difference between abrogation and appropriation.',answer:'Abrogation rejects the authority of standard colonial English as the only correct form. Appropriation takes English and reshapes it for local voices, experiences and cultural meanings. One challenges the rule; the other creatively uses the language.',qs:[
+  {q:'What does “abrogation” mean in this book?',o:['Rejecting the authority of colonial language standards.','Copying the coloniser’s language without change.','Writing only in the coloniser’s country.','Translating every poem word for word.'],a:0,e:'Abrogation challenges the idea that the colonial standard is the only legitimate form of English.'},
+  {q:'What does “appropriation” mean?',o:['Reshaping the coloniser’s language to express local voices and experience.','Rejecting every form of language.','Accepting colonial rule as permanent.','Avoiding local culture in literature.'],a:0,e:'Appropriation creatively uses and changes English for the writer’s own cultural purposes.'}
+ ]}
+];
+
+const STORE='s7-recall-v3';
+const INTERVALS=[0,10*60*1000,24*60*60*1000,3*24*60*60*1000,7*24*60*60*1000,14*24*60*60*1000];
+const $=id=>document.getElementById(id);
+const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>new Date().toLocaleDateString('en-CA');
+const PAP=Object.fromEntries(PAPERS.map(p=>[p.id,p]));
+const allAuthors=[...new Set(TEXTS.map(t=>t.a))];
+function blankState(){return {xp:0,runs:0,streak:0,lastDay:'',cards:{},theme:'light',matches:0}}
+function loadState(){
+ try{const x=JSON.parse(localStorage.getItem(STORE)||'null');if(x&&typeof x==='object')return {...blankState(),...x,cards:x.cards||{}}}catch(e){}
+ // Carry across the old page's score without importing its unreliable question mastery.
+ try{const old=JSON.parse(localStorage.getItem('eq2')||'null');if(old&&typeof old==='object')return {...blankState(),xp:Number(old.xp)||0,runs:Number(old.runs)||0,streak:Number(old.days)||0,lastDay:old.last||''}}catch(e){}
+ return blankState();
+}
+let G=loadState();
+function save(){try{localStorage.setItem(STORE,JSON.stringify(G))}catch(e){}}
+if(G.theme==='dark')document.documentElement.dataset.theme='dark';
+const CARD_BANK=[];
+for(const t of TEXTS){
+ const wrongAuthors=shuffle(allAuthors.filter(a=>a!==t.a)).slice(0,3);
+ CARD_BANK.push({id:t.id+':author',text:t.id,p:t.p,kind:'mcq',tag:'Author',q:`Who wrote “${t.t}”?`,o:shuffle([t.a,...wrongAuthors]),a:t.a,e:`${t.a} is the author of “${t.t}”.`,t});
+ t.qs.forEach((q,i)=>CARD_BANK.push({id:t.id+':q'+i,text:t.id,p:t.p,kind:'mcq',tag:i===0?'Core idea':'Key detail',q:q.q,o:q.o,a:q.o[q.a],e:q.e,t}));
+ CARD_BANK.push({id:t.id+':recall',text:t.id,p:t.p,kind:'recall',tag:'Recall',q:t.recall,answer:t.answer,t});
+}
+const R={page:'home',filter:'all',search:'',detail:null,round:null,match:null,settings:false};
+function rec(id){return G.cards[id]||{level:0,due:0,seen:0,correct:0,wrong:0}}
+function levelName(n){return ['New','Seen','Building','Getting solid','Strong','Locked in'][Math.max(0,Math.min(5,n))]}
+function xpLevel(x=G.xp){return Math.floor(Math.sqrt(Math.max(0,x)/80))+1}
+function xpStart(l=xpLevel()){return 80*(l-1)*(l-1)}
+function xpProgress(){const l=xpLevel();return Math.max(0,Math.min(100,(G.xp-xpStart(l))/(xpStart(l+1)-xpStart(l))*100))}
+function paperTexts(p){return TEXTS.filter(t=>t.p===p)}
+function textProgress(t){const cards=CARD_BANK.filter(c=>c.text===t.id);return cards.length?Math.round(cards.reduce((s,c)=>s+rec(c.id).level,0)/(cards.length*5)*100):0}
+function paperProgress(p){const ts=paperTexts(p);return ts.length?Math.round(ts.reduce((s,t)=>s+textProgress(t),0)/ts.length):0}
+function totals(){const due=CARD_BANK.filter(c=>rec(c.id).seen&&rec(c.id).due<=Date.now()).length;const fresh=CARD_BANK.filter(c=>!rec(c.id).seen).length;const mastered=CARD_BANK.filter(c=>rec(c.id).level>=4).length;const touched=CARD_BANK.filter(c=>rec(c.id).seen).length;return{due,fresh,mastered,touched}}
+function header(){return `<div class="topbar"><div class="brand"><span class="brand-mark">S7</span><span>RECALL</span></div><div class="top-actions"><span class="quiet-btn">LV ${xpLevel()} · ${G.xp} XP</span><button class="icon-btn" data-action="theme" aria-label="Toggle colour theme">${G.theme==='dark'?'☼':'◐'}</button><button class="icon-btn" data-action="settings" aria-label="Settings">···</button></div></div>`}
+function home(){
+ const z=totals(),next=G.cards?CARD_BANK.filter(c=>rec(c.id).seen&&rec(c.id).due<=Date.now()).length:0;
+ return `<div class="shell">${header()}
+ <section class="hero"><div class="hero-inner"><div class="eyebrow">SEMESTER 07 · LEARNING MODE</div><h1>Learn it.<br>Keep it.</h1><p>Build the basics through short rounds, clear explanations and smart repetition.</p><div class="hero-bottom"><button class="primary" data-action="quick">▶ &nbsp; Quick round</button><button class="secondary" data-action="library">Open library ↗</button></div></div></section>
+ <section class="stats"><div class="stat"><div class="n">${xpLevel()}</div><div class="k">Level</div></div><div class="stat"><div class="n">${G.xp}</div><div class="k">Total XP</div></div><div class="stat"><div class="n">${z.due}</div><div class="k">Ready to review</div></div><div class="stat"><div class="n">${G.streak}</div><div class="k">Day streak</div></div></section>
+ <div class="section-head"><div><h2>Choose your move</h2><p>Different ways to make the ideas stick.</p></div></div>
+ <div class="action-grid"><button class="action-card" data-action="quick"><div class="action-icon">⚡</div><strong>Quick round</strong><span>6 mixed cards · adaptive</span></button><button class="action-card" data-action="weak"><div class="action-icon">↻</div><strong>Repair weak spots</strong><span>${z.due?z.due+' ready to revisit':'Find shaky knowledge'}</span></button><button class="action-card" data-action="match"><div class="action-icon">⌘</div><strong>Connect ideas</strong><span>Match each text to its core idea</span></button></div>
+ <div class="section-head"><div><h2>Your five papers</h2><p>${TEXTS.length} study units · progress saved on this device</p></div><button class="text-link" data-action="library">All texts ↗</button></div>
+ <div class="paper-grid">${PAPERS.map(p=>{const ts=paperTexts(p.id),pr=paperProgress(p.id);return `<button class="paper-card" data-action="paper" data-value="${p.id}"><div class="paper-head"><div><div class="paper-code">${p.code}</div><h3>${p.name}</h3></div><span class="paper-count">${ts.length} texts</span></div><div class="progress"><i style="width:${pr}%"></i></div><div class="paper-foot"><span>${p.sub}</span><span>${pr}%</span></div></button>`}).join('')}</div>
+ <div class="bottom-row"><button class="secondary" data-action="library">Browse all texts</button><button class="secondary" data-action="settings">Backup progress</button></div>
+ <div class="footer-note">NO TIMER · NO PENALTY FOR THINKING · YOUR PROGRESS STAYS HERE</div></div>`;
+}
+function library(){
+ const q=R.search.trim().toLowerCase(),list=TEXTS.filter(t=>(R.filter==='all'||t.p===R.filter)&&(!q||[t.t,t.a,t.core].join(' ').toLowerCase().includes(q)));
+ return `<div class="shell">${header()}<div class="page-title"><div class="eyebrow">THE LIBRARY</div><h1>Pick a text.</h1><p>Short explanations first. Then test what you can remember.</p></div>
+ <div class="filters"><input class="search" id="search" value="${esc(R.search)}" placeholder="Find a title, writer or idea…" aria-label="Search texts">${[{id:'all',label:'All'},...PAPERS.map(p=>({id:p.id,label:p.code}))].map(f=>`<button class="pill" aria-pressed="${R.filter===f.id}" data-action="filter" data-value="${f.id}">${f.label}</button>`).join('')}</div>
+ <div class="library-list">${list.map((t,i)=>{const p=PAP[t.p],pr=textProgress(t);return `<button class="book-row" data-action="detail" data-value="${t.id}"><span class="book-index">${String(TEXTS.indexOf(t)+1).padStart(2,'0')}</span><span class="book-copy"><strong>${esc(t.t)}</strong><small>${esc(t.a)} · ${p.code}</small></span><span class="book-level">${pr}%</span></button>`}).join('')||'<div class="empty">No texts match that search.</div>'}</div>
+ <div class="bottom-row"><button class="secondary" data-action="home">← Home</button></div></div>`;
+}
+function detail(id){
+ const t=TEXTS.find(x=>x.id===id);if(!t){R.page='library';return library()}
+ const p=PAP[t.p],pr=textProgress(t),people=t.people||[];
+ return `<div class="shell"><div class="detail-wrap">${header()}<div class="back-line"><button data-action="library">← Library</button><span class="mono" style="color:var(--muted)">${p.code} · ${pr}% secure</span></div>
+ <article class="detail-card"><div class="detail-meta"><span>${p.name}</span><span>·</span><span>${t.f}</span></div><h1>${esc(t.t)}</h1><p class="byline">${esc(t.a)}</p>
+ <div class="core-box"><div class="eyebrow">THE CORE</div><p>${esc(t.core)}</p></div>
+ <section class="detail-section"><h3>Keep these in your head</h3><div class="anchor-list">${t.pins.map(x=>`<div class="anchor">${esc(x)}</div>`).join('')}</div></section>
+ ${people.length?`<section class="detail-section"><h3>People</h3><div class="people-grid">${people.map(x=>`<div class="person"><strong>${esc(x[0])}</strong><span>${esc(x[1])}</span></div>`).join('')}</div></section>`:''}
+ <div class="detail-actions"><button class="primary" data-action="test-text" data-value="${t.id}">Test this text →</button><button class="secondary" data-action="recall-text" data-value="${t.id}">Recall it</button></div></article></div></div>`;
+}
+function chooseCards({count=6,paper='all',text=null,weak=false}={}){
+ let pool=CARD_BANK.filter(c=>(paper==='all'||c.p===paper)&&(!text||c.text===text));
+ if(weak){const seen=pool.filter(c=>rec(c.id).seen).sort((a,b)=>rec(a.id).level-rec(b.id).level||rec(a.id).due-rec(b.id).due);const fresh=pool.filter(c=>!rec(c.id).seen);pool=seen.length?seen.concat(shuffle(fresh)):pool}
+ const due=pool.filter(c=>rec(c.id).seen&&rec(c.id).due<=Date.now()).sort((a,b)=>rec(a.id).level-rec(b.id).level||rec(a.id).due-rec(b.id).due);
+ const shaky=pool.filter(c=>rec(c.id).seen&&rec(c.id).level<3&&!due.includes(c));
+ const fresh=shuffle(pool.filter(c=>!rec(c.id).seen));
+ const stable=shuffle(pool.filter(c=>rec(c.id).level>=3&&!due.includes(c)));
+ let picked=[];const usedText=new Set();
+ function take(group,n){for(const c of group){if(picked.length>=count||n<=0)break;if(picked.some(x=>x.id===c.id))continue;if(usedText.has(c.text)&&picked.length<count-1)continue;picked.push(c);usedText.add(c.text);n--}}
+ take(due,Math.min(3,count));take(shuffle(shaky),Math.min(2,count-picked.length));take(fresh,count-picked.length);take(stable,count-picked.length);
+ if(picked.length<count)take(shuffle(pool.filter(c=>!picked.includes(c))),count-picked.length);
+ // Keep the mix useful: include at least one unaided-recall card when available.
+ if(picked.length>1&&!picked.some(c=>c.kind==='recall')){const rr=pool.find(c=>c.kind==='recall'&&!picked.includes(c));if(rr)picked[picked.length-1]=rr}
+ return shuffle(picked.slice(0,count));
+}
+function startRound(opts={}){
+ const queue=chooseCards({count:opts.count||6,paper:opts.paper||'all',text:opts.text||null,weak:!!opts.weak});
+ if(!queue.length){R.page='home';render();return}
+ R.round={queue,index:0,startedXp:G.xp,correct:0,wrong:0,missed:[],retryIds:[],mode:opts.text?'text':opts.paper&&opts.paper!=='all'?'paper':opts.weak?'weak':'quick',opts};
+ R.page='play';render();
+}
+function currentCard(){return R.round&&R.round.queue[R.round.index]}
+function roundCardView(){
+ const c=currentCard(),r=R.round;if(!c)return finishRound();
+ const total=r.queue.length,idx=r.index+1,progress=(r.index/total)*100,t=c.t,p=PAP[t.p],seen=rec(c.id);
+ let body=`<div class="play-nav"><button data-action="leave-round">← Exit</button><div class="play-progress"><i style="width:${progress}%"></i></div><span class="mono" style="color:var(--muted)">${idx}/${total}</span></div>
+ <div class="play-shell"><div class="play-meta"><span>${p.code} · ${esc(t.t)}</span><span>${c.tag} · ${levelName(seen.level)}</span></div><article class="question-card"><div class="eyebrow" style="color:var(--accent)">${c.kind==='recall'?'NO OPTIONS':'RETRIEVAL'}</div><h1>${esc(c.q)}</h1>`;
+ if(c.kind==='mcq'){
+   body+=`<div class="options">${c.o.map((o,i)=>`<button class="option" data-action="choose" data-value="${i}"><span class="letter">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+ }else{
+   body+=`<p class="prompt-note">Say it or write it in your own words before revealing the key.</p><textarea class="recall-input" id="recall-answer" placeholder="Your explanation (optional)…"></textarea><button class="primary reveal" data-action="reveal">Reveal the key idea</button>`;
+ }
+ body+='</article></div>';
+ return `<div class="shell"><div class="detail-wrap">${header()}</div>${body}</div>`;
+}
+function feedbackView(){
+ const c=currentCard(),f=R.round.feedback;if(!c||!f)return roundCardView();
+ const t=c.t,p=PAP[t.p];
+ let content='';
+ if(c.kind==='mcq'){
+   content=`<div class="options">${c.o.map((o,i)=>`<button class="option ${o===c.a?'correct':i===f.choice?'wrong':''}" disabled><span class="letter">${String.fromCharCode(65+i)}</span><span>${esc(o)}</span></button>`).join('')}</div>`;
+ }else{
+   content=`${R.round.ownAnswer?`<div class="answer-box"><strong>Your version</strong><p>${esc(R.round.ownAnswer)}</p></div>`:''}<div class="answer-box"><strong>Key idea</strong><p>${esc(c.answer)}</p></div>`;
+ }
+ let status=f.correct?'Good retrieval.':'Not quite — now you have the correction.';
+ let note=c.kind==='mcq'?c.e:c.answer;
+ let decision=f.correct?`<div class="confidence"><button data-action="rate" data-value="sure">Solid — I knew it</button><button data-action="rate" data-value="shaky">Shaky — show me again</button></div>`:`<div class="next-row"><button class="primary" data-action="wrong-next">Got it · continue</button></div>`;
+ return `<div class="shell"><div class="detail-wrap">${header()}</div><div class="play-shell"><div class="play-nav"><button data-action="leave-round">← Exit</button><div class="play-progress"><i style="width:${(R.round.index/R.round.queue.length)*100}%"></i></div><span class="mono" style="color:var(--muted)">${R.round.index+1}/${R.round.queue.length}</span></div><div class="play-meta"><span>${p.code} · ${esc(t.t)}</span><span>${c.tag}</span></div><article class="question-card"><div class="eyebrow" style="color:${f.correct?'var(--green)':'var(--red)'}">${f.correct?'✓ RETRIEVED':'↻ REPAIR'}</div><h1>${esc(status)}</h1>${content}<div class="feedback ${f.correct?'good':'bad'}"><strong>${f.correct?'Why it is right':'Keep the distinction'}</strong><p>${esc(note)}</p></div>${decision}</article></div></div>`;
+}
+function play(){return R.round&&R.round.feedback?feedbackView():roundCardView()}
+function recordOutcome(c,outcome){
+ const r={...rec(c.id),seen:rec(c.id).seen+1};
+ if(outcome==='sure'){
+   r.level=Math.min(5,r.level+1);r.correct++;r.streak=(r.streak||0)+1;r.due=Date.now()+INTERVALS[r.level];G.xp+=10+(r.level===5?2:0);R.round.correct++;
+ }else if(outcome==='shaky'){
+   r.correct++;r.streak=0;r.due=Date.now()+10*60*1000;G.xp+=5;R.round.correct++;
+ }else{
+   r.level=Math.max(0,r.level-1);r.wrong++;r.streak=0;r.due=Date.now()+5*60*1000;G.xp+=1;R.round.wrong++;
+   if(!R.round.missed.includes(c.text))R.round.missed.push(c.text);
+   if(!R.round.retryIds.includes(c.id)&&R.round.queue.length<10){R.round.retryIds.push(c.id);R.round.queue.splice(Math.min(R.round.index+3,R.round.queue.length),0,c)}
+ }
+ G.cards[c.id]=r;save();
+}
+function chooseAnswer(i){
+ const c=currentCard(),r=R.round;if(!c||r.feedback)return;
+ const correct=c.o[Number(i)]===c.a;
+ r.feedback={correct,choice:Number(i)};
+ if(!correct)recordOutcome(c,'wrong');
+ render();
+}
+function rateCard(v){const c=currentCard();if(!c)return;recordOutcome(c,v);R.round.feedback=null;R.round.index++;if(R.round.index>=R.round.queue.length)finishRound();else render()}
+function wrongNext(){R.round.feedback=null;R.round.index++;if(R.round.index>=R.round.queue.length)finishRound();else render()}
+function revealRecall(){const c=currentCard();if(!c||R.round.feedback)return;const input=$('recall-answer');R.round.ownAnswer=input?input.value.trim():'';R.round.feedback={correct:true,revealed:true};render()}
+function finishRound(){
+ const r=R.round;if(!r)return;
+ const d=today();if(G.lastDay!==d){const y=new Date(Date.now()-86400000).toLocaleDateString('en-CA');G.streak=G.lastDay===y?G.streak+1:1;G.lastDay=d}
+ G.runs++;save();R.page='finish';render();
+}
+function finish(){
+ const r=R.round,z=r.correct+r.wrong,accuracy=z?Math.round(r.correct/z*100):0,miss=[...new Set(r.missed)].map(id=>TEXTS.find(t=>t.id===id)).filter(Boolean);
+ return `<div class="shell">${header()}<section class="finish"><div class="eyebrow" style="color:var(--accent)">ROUND COMPLETE</div><div class="score">${accuracy}%</div><h1>That’s a stronger memory.</h1><p>${r.correct} solid retrievals · ${r.wrong} repairs · +${G.xp-r.startedXp} XP</p><p>Level ${xpLevel()} · ${G.runs} rounds completed</p>${miss.length?`<div class="missed-list"><strong>Worth another look</strong>${miss.map(t=>`<p>${esc(t.t)} — ${esc(t.hook)}</p>`).join('')}</div>`:''}<div class="finish-actions"><button class="primary" data-action="quick">Another round →</button><button class="secondary" data-action="home">Home</button></div></section></div>`;
+}
+function startMatch(){
+ let pool=shuffle(TEXTS);const chosen=[],authors=new Set();for(const t of pool){if(!authors.has(t.a)){chosen.push(t);authors.add(t.a)}if(chosen.length===4)break}
+ if(chosen.length<4)chosen.push(...pool.filter(t=>!chosen.includes(t)).slice(0,4-chosen.length));
+ let tiles=[];chosen.forEach(t=>{tiles.push({id:t.id,side:'title',label:t.t,small:'TEXT'});tiles.push({id:t.id,side:'idea',label:t.hook,small:'CORE IDEA'})});
+ R.match={tiles:shuffle(tiles),selected:null,matched:[],errors:0,startedXp:G.xp};R.page='match';render();
+}
+function match(){const m=R.match;if(!m)return home();return `<div class="shell"><div class="detail-wrap">${header()}<div class="back-line"><button data-action="home">← Home</button><span class="mono" style="color:var(--muted)">CONNECT IDEAS</span></div><div class="page-title"><div class="eyebrow">PAIR THE IDEA</div><h1>What belongs together?</h1><p>Match each text with its core idea. Four pairs per round.</p></div><div class="match-grid">${m.tiles.map((t,i)=>`<button class="match-tile ${m.matched.includes(t.id)?'matched':''} ${m.selected===i?'selected':''}" data-action="tile" data-value="${i}" ${m.matched.includes(t.id)?'disabled':''}><small>${t.small}</small>${esc(t.label)}</button>`).join('')}</div><div class="match-status"><span>${m.matched.length/2} / 4 pairs</span><span>${m.errors} wrong turns</span></div></div></div>`}
+function settings(){return `<div class="shell">${header()}<div class="page-title"><div class="eyebrow">YOUR DATA</div><h1>Keep your progress.</h1><p>Everything is stored on this device. Export a backup before changing browsers or phones.</p></div><div class="settings-card"><h3>Progress backup</h3><p>Download your XP, streak and review history as a small JSON file. Import it on another device to continue.</p><div class="settings-actions"><button class="primary" data-action="export">Export backup</button><button class="secondary" data-action="import">Import backup</button><input type="file" id="import-file" accept="application/json"></div></div><div class="settings-card"><h3>Reset progress</h3><p>This erases saved XP and learning history on this device. Your study content stays intact.</p><div class="settings-actions"><button class="danger-btn" data-action="reset">Reset all progress</button></div></div><div class="bottom-row"><button class="secondary" data-action="home">← Home</button></div></div>`}
+function render(){
+ document.documentElement.dataset.theme=G.theme==='dark'?'dark':'light';
+ const app=$('app');
+ app.innerHTML=R.page==='home'?home():R.page==='library'?library():R.page==='detail'?detail(R.detail):R.page==='play'?play():R.page==='finish'?finish():R.page==='match'?match():R.page==='match-done'?matchDone():settings();
+ if(R.page==='library'){$('search')?.addEventListener('input',e=>{const pos=e.target.selectionStart;R.search=e.target.value;const y=window.scrollY;render();const el=$('search');el?.focus();el?.setSelectionRange(pos,pos);window.scrollTo(0,y)})}
+}
+function exportBackup(){const blob=new Blob([JSON.stringify({version:3,exported:new Date().toISOString(),progress:G},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='s7-recall-progress.json';a.click();URL.revokeObjectURL(url)}
+function importBackup(file){const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result),p=data.progress||data;if(!p||typeof p!=='object'||!p.cards)throw new Error('Invalid backup');G={...blankState(),...p,cards:p.cards};save();render();alert('Progress restored.')}catch(e){alert('That file is not a valid S7 Recall backup.')}};reader.readAsText(file)}
+function tileClick(i){const m=R.match,t=m.tiles[i];if(!t||m.matched.includes(t.id)||m.selected===i)return;if(m.selected===null){m.selected=i;render();return}const prev=m.tiles[m.selected];if(prev.id===t.id&&prev.side!==t.side){m.matched.push(t.id);m.selected=null;G.xp+=8;G.matches++;save();if(m.matched.length===4){R.page='match-done'}render()}else{m.errors++;const old=m.selected;m.selected=i;render();setTimeout(()=>{if(R.page!=='match')return;R.match.selected=null;render()},650)}}
+function matchDone(){const m=R.match;return `<div class="shell">${header()}<section class="finish"><div class="eyebrow" style="color:var(--accent)">ALL FOUR CONNECTED</div><div class="score">+32</div><h1>Good connections.</h1><p>${m.errors} wrong turns · ${G.matches} total matches completed</p><div class="finish-actions"><button class="primary" data-action="match">Play again →</button><button class="secondary" data-action="home">Home</button></div></section></div>`}
+const actions={
+ home:()=>{R.page='home';R.round=null;render()},library:()=>{R.page='library';R.search='';R.filter='all';render()},quick:()=>startRound(),weak:()=>startRound({weak:true}),paper:v=>startRound({paper:v}),
+ detail:v=>{R.detail=v;R.page='detail';render()},filter:v=>{R.filter=v;render()},
+ 'test-text':v=>startRound({text:v,count:5}), 'recall-text':v=>{const t=TEXTS.find(x=>x.id===v);if(t){const c=CARD_BANK.find(x=>x.text===v&&x.kind==='recall');R.round={queue:[c],index:0,startedXp:G.xp,correct:0,wrong:0,missed:[],retryIds:[],mode:'text',opts:{text:v}};R.page='play';render()}},
+ choose:v=>chooseAnswer(v),rate:v=>rateCard(v),reveal:()=>revealRecall(), 'wrong-next':()=>wrongNext(),next:()=>wrongNext(),
+ 'leave-round':()=>{if(confirm('Leave this round? Your answers so far are saved.')){R.round=null;R.page='home';render()}},
+ match:()=>startMatch(),tile:v=>tileClick(Number(v)),
+ theme:()=>{G.theme=G.theme==='dark'?'light':'dark';save();render()},settings:()=>{R.page='settings';render()},export:()=>exportBackup(),import:()=> $('import-file')?.click(),
+ reset:()=>{if(confirm('Erase all saved progress on this device? This cannot be undone.')){G=blankState();save();R.page='home';render()}},
+};
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-action]');if(!b)return;
+ const a=b.dataset.action,v=b.dataset.value;
+ if(a==='detail'&&R.page==='library'){actions.detail(v);return}
+ if(a==='tile'){actions.tile(v);return}
+ if(actions[a])actions[a](v);
+});
+document.addEventListener('change',e=>{if(e.target.id==='import-file'&&e.target.files?.[0])importBackup(e.target.files[0])});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&R.page!=='home'){R.page='home';R.round=null;render()}});
+render();
+</script>
+</body>
+</html>
